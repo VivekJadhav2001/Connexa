@@ -32,3 +32,11 @@ export const timeAgo =(date)=>{
 
         return postDate.toLocaleDateString("en-IN");
     }
+
+export const BATCHES = [
+  "OBH-1",
+  "OBH-2",
+  "OBH-3",
+  "OBH-4",
+  "OBH-5",
+];

@@ -16,7 +16,7 @@ function authorization(req,res,next){
     console.log(decoded,"Decoded from jwt")
 
     if(!decoded){
-        res.status(403).json({success:false,message:"Token not valid"})
+       return res.status(403).json({success:false,message:"Token not valid"})
     }
 
 

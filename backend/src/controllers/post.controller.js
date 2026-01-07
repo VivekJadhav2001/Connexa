@@ -1,33 +1,45 @@
 import { TYPE_OF_POST } from "../constants.js";
 import { Post } from "../models/post.model.js";
-import { User } from "../models/user.model.js";
+import { Like } from "../models/likes.model.js"
+import { Comment } from "../models/comments.model.js"
 
 const createPost = async (req, res) => {
     try {
         const {
+            postCategory,
             contentType,
             content,
             caption,
-            type,
-            isLikeDisabled,
-            isCommentDisabled
+            referralDetails,
+            visibility,
         } = req.body;
 
-        if (!contentType || !content || !type) {
+        if (!postCategory || !contentType || !content) {
             return res.status(400).json({
                 success: false,
                 message: "Required fields missing",
             });
         }
 
+        // ✅ Referral authorization
+        if (
+            postCategory === "referral" &&
+            !req.userDecoded.isVerified
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Only verified professionals can post referrals",
+            });
+        }
+
         const post = await Post.create({
-            userId: req.userDecoded.id,
+            author: req.userDecoded.id,
+            postCategory,
             contentType,
             content,
             caption,
-            type,
-            isLikeDisabled,
-            isCommentDisabled,
+            referralDetails: postCategory === "referral" ? referralDetails : undefined,
+            visibility,
         });
 
         res.status(201).json({
@@ -35,7 +47,6 @@ const createPost = async (req, res) => {
             message: "Post created successfully",
             data: post,
         });
-
     } catch (error) {
         console.error("Create Post Error:", error);
         res.status(500).json({
@@ -43,14 +54,15 @@ const createPost = async (req, res) => {
             message: "Internal server error",
         });
     }
-}
+};
+
 
 const getMyPosts = async (req, res) => {
 
     try {
         const userId = req.userDecoded.id
 
-        const allPosts = await Post.find({ userId }).sort({ createdAt: -1 })
+        const allPosts = await Post.find({ author: userId }).sort({ createdAt: -1 })
 
         if (!allPosts) {
             res.status(404).json({
@@ -79,7 +91,7 @@ const getAllPosts = async (req, res) => {
     try {
 
         const allPosts = await Post.find({})
-            .populate("userId", "firstName lastName profilePicture")
+            .populate("author", "firstName lastName profilePicture")
             .sort({ createdAt: -1 })
             .limit(20)
 
@@ -103,96 +115,76 @@ const getAllPosts = async (req, res) => {
 
 const deletePost = async (req, res) => {
     try {
-        const { postId } = req.params
-        const userId = req.userDecoded.id
+        const { postId } = req.params;
+        const userId = req.userDecoded.id;
 
-        if (!postId) {
-            return res.status(400).json({
-                success: false,
-                message: "Post ID is required",
-            })
-        }
-        //Check if user is deleting his post or not
-        const post = await Post.findById(postId)
+        const post = await Post.findById(postId);
+
         if (!post) {
             return res.status(404).json({
                 success: false,
                 message: "Post not found",
-            })
+            });
         }
 
-        if (post.userId.toString() !== userId.toString()) {
+
+        if (post.author.toString() !== userId.toString()) {
             return res.status(403).json({
                 success: false,
-                message: "Not Allowed to Delete Others Posts",
-            })
+                message: "Not allowed to delete others' posts",
+            });
         }
 
-
-        const deletedPost = await Post.findByIdAndDelete(postId)
-
-        if (!deletedPost) {
-            return res.status(404).json({
-                success: false,
-                message: "Post not found",
-            })
-        }
+        await Post.findByIdAndDelete(postId);
 
         res.status(200).json({
             success: true,
-            message: "Post Deleted Successfully",
-            data: deletedPost
-        })
+            message: "Post deleted successfully",
+        });
     } catch (error) {
-        console.error("Delete Post Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error",
-        })
+        res.status(500).json({ success: false, message: "Server error" });
     }
-}
+};
+
 
 const updatePost = async (req, res) => {
-
     try {
-        const postId = req.params.postId
-        const body = req.body
+        const { postId } = req.params;
+        const userId = req.userDecoded.id;
 
-        if (!postId) {
-            res.status(404).json({ success: true, message: "Post Id Is Required" })
-            return
-        }
+        const post = await Post.findById(postId);
 
-        if (Object.keys(body).length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Update data is required",
-            })
-        }
-        const postToUpdate = await Post.findByIdAndUpdate(postId, body, { new: true, runValidators: true })
-
-        if (!postToUpdate) {
+        if (!post) {
             return res.status(404).json({
                 success: false,
                 message: "Post not found",
-            })
+            });
         }
+
+        // ownership check
+        if (post.author.toString() !== userId.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "Not allowed to update others' posts",
+            });
+        }
+
+        const updatedPost = await Post.findByIdAndUpdate(
+            postId,
+            req.body,
+            { new: true, runValidators: true }
+        );
 
         res.status(200).json({
             success: true,
             message: "Post updated successfully",
-            data: postToUpdate,
-        })
-
-
+            data: updatedPost,
+        });
     } catch (error) {
-        console.error("Update Post Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error",
-        })
+        res.status(500).json({ success: false, message: "Server error" });
     }
-}
+};
+
 
 const toggleLike = async (req, res) => {
     try {
@@ -200,15 +192,6 @@ const toggleLike = async (req, res) => {
         const postId = req.params.postId;
 
         const post = await Post.findById(postId);
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found",
-            });
-        }
-
         if (!post) {
             return res.status(404).json({
                 success: false,
@@ -216,116 +199,62 @@ const toggleLike = async (req, res) => {
             });
         }
 
-        // IMPORTANT: userId is string in schema
-        const alreadyLiked = post.likes.some(
-            (like) => like.userId === userId
-        );
+        const existingLike = await Like.findOne({ userId, postId });
 
-        if (alreadyLiked) {
-            // return res.status(409).json({
-            //     success: false,
-            //     message: "Post already liked",
-            // });
+        if (existingLike) {
+            await Like.deleteOne({ _id: existingLike._id });
 
-            const newPostLikesData = post.likes.filter((like) => like.userId !== userId)
-
-            post.likes = newPostLikesData
-
-            await post.save()
+            await Post.findByIdAndUpdate(postId, {
+                $inc: { likesCount: -1 },
+            });
 
             return res.status(200).json({
                 success: true,
-                message: "post disliked successfully",
-                likesCount: post.likes.length
-            })
+                message: "Post unliked",
+            });
         }
 
-        post.likes.push({
-            userId: userId,
-            userName: `${user.firstName} ${user.lastName}`,
-            profilePic: user.profilePic || "",
-        });
+        await Like.create({ userId, postId });
 
-        await post.save();
+        await Post.findByIdAndUpdate(postId, {
+            $inc: { likesCount: 1 },
+        });
 
         res.status(200).json({
             success: true,
             message: "Post liked",
-            likesCount: post.likes.length,
         });
     } catch (error) {
-        console.error("Update Post Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error",
-        });
+        res.status(500).json({ success: false, message: "Server error" });
     }
 };
 
 
-// const unLikePost = async (req, res) => {
-//     try {
-//         const userId = req.userDecoded.id
-//         const postId = req.params.postId
-
-//         const post = await Post.findById(postId)
-//         const user = await User.findById(userId)
-
-//         if (!user) {
-//             return res.status(404).json({ success: false, message: "User not found" })
-//         }
-
-//         if (!post) {
-//             return res.status(404).json({ success: false, message: "Post not found" })
-//         }
-
-//         const beforeLike = post.likes.length
-
-//         post.likes = post.likes.filter((like) => like.userId !== userId)
-
-//         if (beforeLike === post.likes.length) {
-//             return res.status(409).json({
-//                 success: false,
-//                 message: "Post not liked yet",
-//             })
-//         }
-
-//         await post.save()
-
-//         res.status(200).json({
-//             success: true,
-//             message: "Post unliked",
-//             likesCount: post.likes.length,
-//         })
-//     } catch (error) {
-//         res.status(500).json({ success: false, message: "Server error" })
-//     }
-// }
-
 const getReferalPosts = async (req, res) => {
     try {
-        const posts = await Post.find({}).sort({ created: -1 })
-        console.log(posts, "POSTS")
+        const referralPosts = await Post.find({
+            postCategory: "referral",
+        })
+            .populate("author", "firstName lastName profilePicture")
+            .sort({ createdAt: -1 });
 
-        if (!posts) {
-            return res.status(404).json({ success: true, message: "No Posts Avaliable" })
-        }
-
-        const referalPosts = posts.filter((post) => post.type === TYPE_OF_POST.Referral_Post)
-
-        if (!referalPosts) {
-            return res.status(404).json({ success: true, message: "No referal posts Avaliable" })
+        if (!referralPosts.length) {
+            return res.status(404).json({
+                success: false,
+                message: "No referral posts available",
+            });
         }
 
         res.status(200).json({
             success: true,
-            message: "Referal Posts",
-            data: referalPosts
-        })
+            message: "Referral posts",
+            data: referralPosts,
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Server error" })
+        res.status(500).json({ success: false, message: "Server error" });
     }
-}
+};
+
 
 const createComment = async (req, res) => {
     try {
@@ -334,50 +263,156 @@ const createComment = async (req, res) => {
         const { comment } = req.body;
 
         if (!comment) {
-            return res.status(400).json({ success: false, message: "Please provide valid comment" });
+            return res.status(400).json({
+                success: false,
+                message: "Comment required",
+            });
         }
 
-        if (!userId) {
-            return res.status(400).json({ success: false, message: "Please provide user-id" });
-        }
-
-        if (!postId) {
-            return res.status(400).json({ success: false, message: "Please provide post-id" });
-        }
-
-        const user = await User.findById(userId);
         const post = await Post.findById(postId);
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User Not Found" });
-        }
-
         if (!post) {
-            return res.status(404).json({ success: false, message: "Post Not Found" });
+            return res.status(404).json({
+                success: false,
+                message: "Post not found",
+            });
         }
 
-        const commentedTime = new Date();
-
-        post.comments.push({
-            profilePic: user.profilePicture || "https://dummyimage.com/100x100/ccc/fff.png",
-            userName: user.firstName + " " + user.lastName,
-            userId: userId,
-            comment: comment,
-            createdAt: commentedTime,
+        await Comment.create({
+            userId,
+            postId,
+            comment,
         });
 
-        await post.save();
+        await Post.findByIdAndUpdate(postId, {
+            $inc: { commentsCount: 1 },
+        });
 
-        return res.status(200).json({
+        res.status(201).json({
             success: true,
-            message: "Commented Successfully",
-            commentLength: post.comments.length,
+            message: "Comment added",
         });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ success: false, message: "Internal Server error" });
+        res.status(500).json({ success: false, message: "Internal Server error" });
     }
-}
+};
+
+
+const deleteComment = async (req, res) => {
+  try {
+    const userId = req.userDecoded.id;
+    const { commentId } = req.params;
+
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    }
+
+    if (comment.userId.toString() !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to delete this comment",
+      });
+    }
+
+    await Comment.findByIdAndDelete(commentId);
+
+    await Post.findByIdAndUpdate(comment.postId, {
+      $inc: { commentsCount: -1 },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Comment deleted",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server error",
+    });
+  }
+};
+
+
+const editComment = async (req, res) => {
+  try {
+    const userId = req.userDecoded.id;
+    const { commentId } = req.params;
+    const { comment } = req.body;
+
+    if (!comment) {
+      return res.status(400).json({
+        success: false,
+        message: "Updated comment text is required",
+      });
+    }
+
+    const existingComment = await Comment.findById(commentId);
+    if (!existingComment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    }
+
+    if (existingComment.userId.toString() !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to edit this comment",
+      });
+    }
+
+    existingComment.comment = comment;
+    await existingComment.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Comment updated",
+      data: existingComment,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server error",
+    });
+  }
+};
+
+const getAllCommentsByPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    if (!postId) {
+      return res.status(400).json({
+        success: false,
+        message: "Post ID is required",
+      });
+    }
+
+    const comments = await Comment.find({ postId })
+      .populate("userId", "firstName lastName profilePicture")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      message: "Comments fetched successfully",
+      data: comments, 
+    });
+
+  } catch (error) {
+    console.error("Get Comments Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
 
 /*
 delete comment 
@@ -395,7 +430,9 @@ export {
     deletePost,
     updatePost,
     toggleLike,
-    // unLikePost,
     getReferalPosts,
-    createComment
+    createComment,
+    deleteComment,
+    editComment,
+    getAllCommentsByPost
 }

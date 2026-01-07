@@ -1,21 +1,25 @@
 import mongoose from "mongoose";
 
 const callSchema = new mongoose.Schema({
-  caller: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  caller: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
-  callType: { type: String, enum: ["video", "audio"], default: "video" },
+  callType: { type: String, enum: ["audio", "video"] },
+
   status: {
     type: String,
-    enum: ["initiated", "ringing", "accepted", "rejected", "ended"],
-    default: "initiated"
+    enum: ["initiated", "ringing", "accepted", "ended"],
+    default: "initiated",
   },
 
   startedAt: Date,
-  endedAt: Date
-}, { timestamps: true })
+  endedAt: Date,
 
-export const Call = mongoose.model("Call", callSchema)
+  isPaidCall: { type: Boolean, default: false },
+
+}, { timestamps: true });
+
+export const Call = mongoose.model("Call", callSchema);
 
 
 /*

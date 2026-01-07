@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BATCHES } from "../constants";
 
 function Signup() {
     const [userData, setUserData] = useState({
@@ -14,7 +15,7 @@ function Signup() {
         centerLocation: "",
         courseType: "",
         isOnline: false,
-        isPlaced:false
+        isPlaced: false
     });
 
     const [loading, setLoading] = useState(false);
@@ -46,7 +47,7 @@ function Signup() {
                 centerLocation: "",
                 courseType: "",
                 isOnline: false,
-                isPlaced:false
+                isPlaced: false
             });
 
             navigate("/");
@@ -141,15 +142,27 @@ function Signup() {
                     {/* Batch */}
                     <div>
                         <label className="text-sm text-gray-300">Batch</label>
-                        <input
-                            type="text"
+                        <select
                             value={userData.batch}
                             onChange={(e) =>
                                 setUserData({ ...userData, batch: e.target.value })
                             }
-                            className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none focus:border-purple-400 transition"
-                            placeholder="OBH-5"
-                        />
+                            className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none"
+                        >
+                            <option value="" className="text-black bg-white">
+                                Select Batch
+                            </option>
+
+                            {BATCHES.map((batch) => (
+                                <option
+                                    key={batch}
+                                    value={batch}
+                                    className="text-black bg-white"
+                                >
+                                    {batch}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Course Type */}

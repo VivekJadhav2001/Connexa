@@ -6,16 +6,18 @@ import cors from "cors"
 import userRoutes from "./routes/user.routes.js"
 import postRoutes from "./routes/post.routes.js"
 import authRoutes from "./routes/auth.routes.js"
-
+import adminRoutes from "./routes/admin.routes.js"
 
 
 dotenv.config()
+
+const originPORTS = ["http://localhost:5173","http://localhost:5174"]
 
 const app = express()
 app.use(express.json())
 app.use(cookieParser());
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: originPORTS,
     methods: ["GET","HEAD","POST","PUT","PATCH","DELETE","OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials:true
@@ -56,6 +58,9 @@ app.use("/api/user",userRoutes)
 //POST ROUTES
 app.use("/api/post",postRoutes)
 
+//ADMIN ROUTES
+app.use("/admin/users",adminRoutes)
+
 
 //Connecting Database
 mongoose.connect(process.env.MONGODB_URI)
@@ -74,4 +79,4 @@ app.use((err, req, res, next) => {
 
 
 
-app.listen(process.env.PORT || 8000, () => console.log(`Server is running at port: ${process.env.PORT}`))
+app.listen(process.env.PORT, () => console.log(`Server is running at port: ${process.env.PORT}`))

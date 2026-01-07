@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from "react-redux"
+import { signIn } from '../features/authSlice.js'
 
 function SignIn() {
 
@@ -9,40 +11,60 @@ function SignIn() {
         password: "",
     });
     const [loading, setLoading] = useState(false);
+    const dispatch = useDispatch()
     const navigate = useNavigate();
 
 
-    async function signIn(){
+    // async function signIn(){
+    //     try {
+    //         setLoading(true)
+    //         /*
+    //         if we want access cookies in client side we need to pass {withCredentials:true} by default its true
+    //         */
+    //         const user = await axios.post("http://localhost:3000/api/auth/signIn",credentials,{withCredentials:true})
+
+
+    //         console.log(user,"userfrom backend")
+    //         if(!user.data.success){
+    //             alert("Invalid email or password");
+    //             setLoading(false);
+    //             return;
+    //         }
+
+    //         if(user.data.success){
+    //             setCredentials({ email: "", password: "" });
+    //             navigate("/home")
+    //         }
+
+    //         setLoading(false);
+
+
+    //     } catch (error) {
+    //     console.log(error,"ERROR IN SIGN_IN") 
+    //     setLoading(false)
+    //     }
+    // }
+
+    async function login(e) {
+        e.preventDefault()
+
         try {
-            setLoading(true)
+            const user = await dispatch(signIn(credentials)).unwrap()
+            console.log(user, "Login User")
+            navigate("/home")
             /*
-            if we want access cookies in client side we need to pass {withCredentials:true} by default its true
+            👉 .unwrap() converts:
+
+                fulfilled → resolved promise
+
+                rejected → thrown error
             */
-            const user = await axios.post("http://localhost:3000/api/auth/signIn",credentials,{withCredentials:true})
-
-            
-            console.log(user,"userfrom backend")
-            if(!user.data.success){
-                alert("Invalid email or password");
-                setLoading(false);
-                return;
-            }
-
-            if(user.data.success){
-                setCredentials({ email: "", password: "" });
-                navigate("/home")
-            }
-            
-            setLoading(false);
-
-
         } catch (error) {
-        console.log(error,"ERROR IN SIGN_IN") 
-        setLoading(false)
+            console.log(error, "Login Not Successful")
         }
     }
 
-  return (
+    return (
         <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-700 via-black to-blue-900 p-4">
             <div className="w-full max-w-md backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-xl">
 
@@ -79,7 +101,7 @@ function SignIn() {
                     {/* Button */}
                     <button
                         type="button"
-                        onClick={signIn}
+                        onClick={login}
                         className="cursor-pointer w-full py-3 mt-4 text-white font-medium rounded-lg bg-linear-to-r from-purple-600 to-blue-500 hover:opacity-90 transition"
                     >
                         {loading ? "Signing In..." : "Sign In"}

@@ -5,14 +5,17 @@ import LandingPage from "./pages/LandingPage"
 import Home from "./pages/Home"
 import ProjectedRoute from "./pages/ProjectedRoute"
 import Profile from "./pages/Profile"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useEffect } from "react"
+import { fetchUser } from "./features/userSlice"
 
 
 function App() {
   const mode = useSelector((state) => state.theme.mode);
+  const dispatch = useDispatch()
 
   useEffect(() => {
+    dispatch(fetchUser())
     document.documentElement.classList.toggle("dark", mode === "dark");
   }, [mode]);
   return (
