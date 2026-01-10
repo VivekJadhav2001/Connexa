@@ -1,185 +1,123 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import ActivityPosts from "../components/ActivityPosts";
-import {postServices} from "../services/postServices"
+import { FaArrowLeft } from "react-icons/fa6";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getJoinedDate } from "../constants";
+import { PiStudentBold } from "react-icons/pi";
+import { FaChalkboardTeacher } from "react-icons/fa";
 
-function Profile() {
+export default function Profile() {
+    const navigate = useNavigate();
 
-    const [user, setUser] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phoneNumber: "",
-        profilePicture: "https://i.pravatar.cc/150?img=60",
-        batch: "",
-        isInstructor: false,
-        centerLocation: "",
-        courseType: "",
-        isOnline: true,
-        lastSeen: "2 hours ago",
-    })
-
-    const [posts,setPosts] = useState([])
-
-    async function getUserDetails() {
-
-        try {
-            const res = await axios.post("http://localhost:3000/api/user/profile", {}, { withCredentials: true })
-            const user = res.data.data
-
-            setUser({
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                phoneNumber: user.phoneNumber,
-                profilePicture: "https://i.pravatar.cc/150?img=60",
-                batch: user.batch,
-                isInstructor: user.isInstructor,
-                centerLocation: user.centerLocation,
-                courseType: user.courseType,
-                isOnline: user.isOnline,
-                lastSeen: "2 hours ago",
-            })
-
-            console.log(user, "USER DETAILS FROM BACKEND")
+    const userData = useSelector((state)=>state.user.currentUser)
+    console.log(userData,"User Data in profile")
+    const JoinedDate = userData?.createdAt
+  ? getJoinedDate(userData.createdAt)
+  : "";
 
 
-        } catch (error) {
-            console.log(error, "Error in profile user details")
-        }
-    }
-
-
-    async function getMyPosts() {
-        try {
-            const res = await postServices.getMyPosts()
-            setPosts(res.data.data)
-        } catch (error) {
-            console.log(error,"FAILED TO FETCH USER POSTS FOR PROFILE")
-        }
-    }
-
-    useEffect(() => {
-        getUserDetails()
-        getMyPosts()
-    }, [])
 
 
     return (
-        <div className="min-h-screen bg-gray-100 py-8">
-            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="border-x border-gray-800 min-h-screen bg-black text-white">
 
-                {/* MAIN PROFILE */}
-                <div className="md:col-span-2 space-y-6">
+            {/* Header */}
+            <div className="flex items-center gap-4 px-4 py-3 sticky top-0 bg-black/80 backdrop-blur z-10 border-b border-gray-800">
 
-                    {/* HEADER */}
-                    <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-                        <div className="h-32 bg-linear-to-r from-blue-600 to-purple-600"></div>
+                {/* Home / Back */}
+                <button
+                    onClick={() => navigate("/home")}
+                    className="hover:bg-gray-900 p-2 rounded-full transition"
+                >
+                    <FaArrowLeft size={20} />
+                </button>
 
-                        <div className="p-6 relative">
-                            <img
-                                src={user.profilePicture}
-                                className="w-28 h-28 rounded-full border-4 border-white absolute -top-14"
-                                alt=""
-                            />
+                <div>
+                    <h2 className="font-bold text-lg leading-none">vivek jadhav</h2>
+                    <p className="text-xs text-gray-400">4 posts</p>
+                </div>
+            </div>
 
-                            <div className="ml-32">
-                                <h1 className="text-2xl font-bold text-gray-900">
-                                    {user.firstName} {user.lastName}
-                                </h1>
+            {/* Cover */}
+            <div className="h-52 bg-linear-to-r from-gray-700 to-gray-800"></div>
 
-                                <p className="text-gray-600">
-                                    {user.courseType} Developer • Batch {user.batch}
-                                </p>
+            {/* Profile Section */}
+            <div className="px-4 relative">
 
-                                <p className="text-sm text-gray-500 mt-1">
-                                    {user.centerLocation}
-                                </p>
+                {/* Avatar */}
 
-                                <div className="mt-4 flex gap-3">
-                                    <button className="bg-blue-600 text-white px-4 py-1.5 rounded-full">
-                                        Edit
-                                    </button>
-                                    <button className="border px-4 py-1.5 rounded-full">
-                                        Message
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                {userData?.profilePicture ? (
+                    <img
+                    src={userData?.profilePicture}
+                    alt="profile"
+                    className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
+                />
 
-                    {/* ABOUT */}
-                    <div className="bg-white rounded-2xl p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold mb-2">About</h2>
-                        <p className="text-gray-600">
-                            {user.isInstructor
-                                ? "Instructor at AccioJob"
-                                : `Student of ${user.courseType} at AccioJob (${user.batch})`}
-                        </p>
-                    </div>
+                ) : (
+                    <img
+                    src="/avatar.png"
+                    alt="profile"
+                    className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
+                />
+                )}
+                <img
+                    src="/avatar.png"
+                    alt="profile"
+                    className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
+                />
 
-                    <div className="bg-white rounded-2xl p-6 shadow-sm">
-                        <ActivityPosts posts={posts} />
-                    </div>
-
-                    {/* EXPERIENCE / COURSE */}
-                    <div className="bg-white rounded-2xl p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold mb-4">Course Details</h2>
-
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-blue-100 text-blue-600 flex items-center justify-center rounded-full font-bold">
-                                {user?.courseType[0]}
-                            </div>
-
-                            <div>
-                                <p className="font-medium">
-                                    {user.courseType} Program
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                    Center: {user.centerLocation}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
+                {/* Edit Button */}
+                <div className="flex gap-2 justify-end mt-4">
+                    <button className="border border-gray-600 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-gray-900 transition cursor-pointer">
+                        Edit profile
+                    </button>
+                    {userData?.subscriptionPlan === "free" && <button className="border border-gray-600 px-4 py-1.5 rounded-full text-sm bg-amber-400 text-black  font-semibold hover:bg-amber-500 transition cursor-pointer">
+                        Switch to Pro
+                    </button>}
                 </div>
 
-                {/* RIGHT SIDEBAR */}
-                <aside className="space-y-6">
-
-                    {/* STATUS */}
-                    <div className="bg-white rounded-2xl p-5 shadow-sm">
-                        <h3 className="font-semibold mb-3">Status</h3>
-
-                        <div className="flex items-center gap-2">
-                            <span
-                                className={`w-3 h-3 rounded-full ${user.isOnline ? "bg-green-500" : "bg-gray-400"
-                                    }`}
-                            ></span>
-                            <p className="text-gray-700">
-                                {user.isOnline ? "Online" : "Offline"}
-                            </p>
-                        </div>
-
-                        {!user.isOnline && (
-                            <p className="text-sm text-gray-500 mt-2">
-                                Last seen {user.lastSeen}
-                            </p>
-                        )}
+                {/* Info */}
+                <div className="mt-14 space-y-3">
+                    <div>
+                        <h1 className="text-xl font-bold">{`${userData?.firstName} ${userData?.lastName}`}</h1>
+                        <p className="text-gray-400 text-sm">{userData?.email}</p>
                     </div>
 
-                    {/* CONTACT INFO */}
-                    <div className="bg-white rounded-2xl p-5 shadow-sm">
-                        <h3 className="font-semibold mb-3">Contact Info</h3>
-                        <p className="text-sm text-gray-600">{user.email}</p>
-                        <p className="text-sm text-gray-600">{user.phoneNumber}</p>
+                    {/* <p className="text-sm leading-relaxed text-gray-200 max-w-md">
+                        A Passionate & Self-taught Frontend developer from India.
+                    </p> */}
+
+                    <div className="flex gap-4 text-gray-400 text-sm">
+                        <span>📍 {userData?.centerLocation}</span>
+                        <span>📅 Joined {JoinedDate}</span>
+                        {userData?.roleType === "student" ? <span className="flex gap-1.5 items-center justify-center"><PiStudentBold size={22}/> Student</span> : <span className="flex gap-1.5 items-center justify-center"><FaChalkboardTeacher size={22}/> Instructor</span>}
+                        <span>{userData?.courseType}</span>
                     </div>
 
-                </aside>
+                    <div className="flex gap-6 text-sm">
+                        <span><b className="text-white">193</b> <span className="text-gray-400">Connected</span></span>
+                        <span><b className="text-white">2</b> <span className="text-gray-400">Connections</span></span>
+                    </div>
+                </div>
+            </div>
 
+            {/* Tabs */}
+            <div className="flex justify-between mt-6 border-b border-gray-800 text-sm">
+                {["Posts", "Replies", "Highlights", "Media", "Likes"].map((tab, i) => (
+                    <button
+                        key={tab}
+                        className={`py-3 w-full text-center hover:bg-gray-900 transition
+              ${i === 0 ? "border-b-2 border-blue-500 font-semibold" : "text-gray-400"}
+            `}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </div>
+
+            {/* Posts */}
+            <div className="p-6 text-gray-500 text-sm text-center">
+                User posts will render here…
             </div>
         </div>
     );
 }
-
-export default Profile;

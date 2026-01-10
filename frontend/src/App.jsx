@@ -8,6 +8,7 @@ import Profile from "./pages/Profile"
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect } from "react"
 import { fetchUser } from "./features/userSlice"
+import { ToastContainer } from "react-toastify";
 
 
 function App() {
@@ -38,6 +39,19 @@ function App() {
           } />
         </Routes>
       </BrowserRouter>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   )
 }

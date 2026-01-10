@@ -8,75 +8,95 @@ import { userLog } from "../constants.js";
 
 
 const signUp = async (req, res) => {
-    try {
-        const {
-            firstName,
-            lastName,
-            email,
-            phoneNumber,
-            password,
-            batch,
-            isInstructor,
-            centerLocation,
-            courseType,
-            isOnline,
-            isPlaced
-        } = req.body;
+  try {
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      password,
+      roleType,
 
-        if (
-            !firstName ||
-            !email ||
-            !phoneNumber ||
-            !password ||
-            !batch ||
-            isInstructor === undefined ||
-            !centerLocation ||
-            !courseType || isPlaced === undefined
-        ) {
-            return res.status(400).json({ message: "All required fields are missing" });
-        }
+      // student fields
+      batch,
+      centerLocation,
+      courseType,
+      isOnline,
 
-        const exist = await User.findOne({ email });
-        if (exist) {
-            return res.status(400).json({ message: "Email already exists" });
-        }
+      // professional / instructor fields
+      organisationName,
+      currentRole,
+    } = req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const user = new User({
-            firstName,
-            lastName,
-            email,
-            phoneNumber,
-            password: hashedPassword,
-            batch,
-            isInstructor,
-            centerLocation,
-            courseType,
-            isOnline,
-            isPlaced
-        });
-
-        await user.save();
-
-        // remove password from response
-        user.password = undefined;
-
-        
-        //Creating user Logs
-        userLog(email)
-
-        return res.status(201).json({
-            success: true,
-            message: "User created successfully",
-            data: user
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: "Internal server error" });
+    // ===== Basic required fields for ALL roles =====
+    if (!firstName || !email || !phoneNumber || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All basic fields are required",
+      });
     }
+
+    // ===== Check existing user =====
+    const exist = await User.findOne({ email });
+    if (exist) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists",
+      });
+    }
+
+    // ===== Hash password =====
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // ===== Create user object =====
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      password: hashedPassword,
+      roleType,
+
+      // pass all fields (mongoose will validate required ones)
+      batch,
+      centerLocation,
+      courseType,
+      isOnline,
+
+      organisationName,
+      currentRole,
+    });
+
+    // ===== Save (mongoose runs role-based validation here) =====
+    await user.save();
+
+    user.password = undefined;
+    userLog(email);
+
+    return res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      data: user,
+    });
+
+  } catch (error) {
+    console.error("Signup Error:", error);
+
+    // ===== Friendly validation error message =====
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 };
+
 
 
 const signIn = async (req, res) => {

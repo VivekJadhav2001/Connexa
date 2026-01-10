@@ -40,3 +40,31 @@ export const BATCHES = [
   "OBH-4",
   "OBH-5",
 ];
+
+export const CENTERS=[
+    "Pune",
+    "Hyderabad",
+    "Noida",
+    "Bangalore",
+    "Chennai"
+]
+
+export const COURSES = [
+    "MERN",
+    "JAVA",
+    "DA",
+    "DS"
+]
+
+
+
+export const getJoinedDate = (strDate) => {
+  const months = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+  ];
+
+  const [year, month] = strDate.split("T")[0].split("-");
+
+  return `${months[Number(month) - 1]} ${year}`;
+};

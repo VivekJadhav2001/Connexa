@@ -1,40 +1,99 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { BATCHES } from "../constants";
+import { Link, useNavigate } from "react-router-dom";
+import { BATCHES, CENTERS, COURSES } from "../constants";
+import { toast } from "react-toastify";
 
 function Signup() {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+
     const [userData, setUserData] = useState({
         firstName: "",
         lastName: "",
         email: "",
         phoneNumber: "",
         password: "",
+
+        roleType: "student", // default
+
+        // Student fields
         batch: "",
-        isInstructor: false,
         centerLocation: "",
         courseType: "",
         isOnline: false,
-        isPlaced: false
+
+        // Professional / Instructor fields
+        organisationName: "",
+        currentRole: "",
     });
 
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    function handleChange(e) {
+        setUserData({ ...userData, [e.target.name]: e.target.value });
+    }
 
     async function signUp() {
+
+        // ===== Role-based frontend validation =====
+        if (userData.roleType === "student") {
+            if (!userData.firstName || !userData.email || !userData.phoneNumber || !userData.password) {
+                toast.warn("Please fill all required fields", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+                return;
+            }
+        }
+
+        if (userData.roleType === "professional" || userData.roleType === "instructor") {
+            if (!userData.firstName || !userData.email || !userData.phoneNumber || !userData.password ||
+                !userData.organisationName || !userData.currentRole) {
+                toast.warn("Please fill all required fields", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+                return
+            }
+        }
+
+        // ===== API Call =====
         try {
             setLoading(true);
 
-            const userRegistration = await axios.post(
+            const res = await axios.post(
                 "http://localhost:3000/api/auth/signUp",
                 userData
             );
 
-            if (!userRegistration.data.success) {
-                alert("Something went wrong. Try again");
+            if (!res.data.success) {
+                toast.error("Signup failed", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    transition: Bounce,
+                });
                 setLoading(false);
                 return;
             }
+
+
+
 
             setUserData({
                 firstName: "",
@@ -42,218 +101,222 @@ function Signup() {
                 email: "",
                 phoneNumber: "",
                 password: "",
+                roleType: "student",
                 batch: "",
-                isInstructor: false,
                 centerLocation: "",
                 courseType: "",
                 isOnline: false,
-                isPlaced: false
+                organisationName: "",
+                currentRole: "",
             });
 
-            navigate("/");
             setLoading(false);
+
+            toast.success("Account created successfully!", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            navigate("/");
+
         } catch (error) {
-            console.log(error, "ERROR IN SIGNUP FUNCTION");
+            console.log("Signup Error:", error);
+            toast.error("Something went wrong");
             setLoading(false);
         }
     }
 
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-700 via-black to-blue-900 p-4">
-            <div className="w-full max-w-md backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-xl">
+        <div className="min-h-screen bg-black flex text-white">
 
-                <h1 className="text-3xl font-bold text-white text-center mb-6">
-                    Create Account
+            {/* ===== Left Logo Section ===== */}
+            <div className="hidden lg:flex w-1/2 items-center justify-center bg-none flex-col gap-6">
+            <h1 className="text-5xl font-extrabold mb-6">
+                    Create your account
                 </h1>
+                {/* <h1 className="text-[250px] font-extrabold tracking-tight">C</h1> */}
+                <img src="./logo.png" alt="" className="w-[58%] rounded-2xl " />
+            </div>
 
-                <form className="space-y-6">
+            {/* ===== Right Signup Panel ===== */}
+            <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16">
 
-                    {/* Email */}
-                    <div>
-                        <label className="text-sm text-gray-300">Email</label>
-                        <input
-                            type="email"
-                            value={userData.email}
-                            onChange={(e) =>
-                                setUserData({ ...userData, email: e.target.value })
-                            }
-                            className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none focus:border-purple-400 transition"
-                            placeholder="Enter your email"
-                        />
-                    </div>
+                
 
-                    {/* Password */}
-                    <div>
-                        <label className="text-sm text-gray-300">Password</label>
-                        <input
-                            type="password"
-                            value={userData.password}
-                            onChange={(e) =>
-                                setUserData({ ...userData, password: e.target.value })
-                            }
-                            className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none focus:border-purple-400 transition"
-                            placeholder="Enter your password"
-                        />
-                    </div>
+                {/* Role Selector */}
+                <select
+                    name="roleType"
+                    value={userData.roleType}
+                    onChange={handleChange}
+                    className="inputX mb-4"
+                >
+                    <option value="student">Student</option>
+                    <option value="professional">Professional</option>
+                    <option value="instructor">Instructor</option>
+                </select>
 
-                    {/* Names */}
-                    <div className="flex gap-4">
-                        <div className="w-1/2">
-                            <label className="text-sm text-gray-300">First Name</label>
-                            <input
-                                type="text"
-                                value={userData.firstName}
-                                onChange={(e) =>
-                                    setUserData({ ...userData, firstName: e.target.value })
-                                }
-                                className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none focus:border-purple-400 transition"
-                                placeholder="First Name"
-                            />
-                        </div>
+                {/* Common Fields */}
+                <input
+                    name="email"
+                    placeholder="Email*"
+                    value={userData.email}
+                    onChange={handleChange}
+                    className="inputX"
+                />
 
-                        <div className="w-1/2">
-                            <label className="text-sm text-gray-300">Last Name</label>
-                            <input
-                                type="text"
-                                value={userData.lastName}
-                                onChange={(e) =>
-                                    setUserData({ ...userData, lastName: e.target.value })
-                                }
-                                className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none focus:border-purple-400 transition"
-                                placeholder="Last Name"
-                            />
-                        </div>
-                    </div>
+                <input
+                    name="password"
+                    type="password"
+                    placeholder="Password*"
+                    value={userData.password}
+                    onChange={handleChange}
+                    className="inputX"
+                />
 
-                    {/* Phone */}
-                    <div>
-                        <label className="text-sm text-gray-300">Phone Number</label>
-                        <input
-                            type="tel"
-                            value={userData.phoneNumber}
-                            onChange={(e) =>
-                                setUserData({ ...userData, phoneNumber: e.target.value })
-                            }
-                            className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none focus:border-purple-400 transition"
-                            placeholder="Enter your phone number"
-                        />
-                    </div>
+                <div className="flex gap-3">
+                    <input
+                        name="firstName"
+                        placeholder="First name*"
+                        value={userData.firstName}
+                        onChange={handleChange}
+                        className="w-full max-w-[185px] border text-[white] mb-3.5 px-3.5 py-3 rounded-md border-solid border-[#2f3336] focus:border-[#1d9bf0]"
+                    />
+                    <input
+                        name="lastName"
+                        placeholder="Last name"
+                        value={userData.lastName}
+                        onChange={handleChange}
+                        className="w-full max-w-[185px] border text-[white] mb-3.5 px-3.5 py-3 rounded-md border-solid border-[#2f3336] focus:border-[#1d9bf0]"
+                    />
+                </div>
 
-                    {/* Batch */}
-                    <div>
-                        <label className="text-sm text-gray-300">Batch</label>
+                <input
+                    name="phoneNumber"
+                    placeholder="Phone number*"
+                    value={userData.phoneNumber}
+                    onChange={handleChange}
+                    className="inputX"
+                />
+
+                {/* ===== Student Fields ===== */}
+                {userData.roleType === "student" && (
+                    <>
                         <select
+                            name="batch"
                             value={userData.batch}
-                            onChange={(e) =>
-                                setUserData({ ...userData, batch: e.target.value })
-                            }
-                            className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none"
+                            onChange={handleChange}
+                            className="inputX"
                         >
-                            <option value="" className="text-black bg-white">
-                                Select Batch
-                            </option>
-
-                            {BATCHES.map((batch) => (
-                                <option
-                                    key={batch}
-                                    value={batch}
-                                    className="text-black bg-white"
-                                >
-                                    {batch}
-                                </option>
+                            <option value="">Select Batch *</option>
+                            {BATCHES.map((b) => (
+                                <option key={b} value={b}>{b}</option>
                             ))}
                         </select>
-                    </div>
 
-                    {/* Course Type */}
-                    <div>
-                        <label className="text-sm text-gray-300">Course Type</label>
                         <select
+                            name="courseType"
                             value={userData.courseType}
-                            onChange={(e) =>
-                                setUserData({ ...userData, courseType: e.target.value })
-                            }
-                            className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none"
+                            onChange={handleChange}
+                            className="inputX"
                         >
-                            <option value="" className="text-black bg-white">Select</option>
-                            <option value="MERN" className="text-black bg-white">MERN</option>
-                            <option value="JAVA" className="text-black bg-white">JAVA</option>
-                            <option value="DA" className="text-black bg-white">DA</option>
+                            <option value="">Select Course *</option>
+                            {COURSES.map((c) => (
+                                <option key={c} value={c}>{c}</option>
+                            ))}
                         </select>
 
-                    </div>
-
-                    {/* Center Location */}
-                    <div>
-                        <label className="text-sm text-gray-300">Center Location</label>
                         <select
+                            name="centerLocation"
                             value={userData.centerLocation}
-                            onChange={(e) =>
-                                setUserData({ ...userData, centerLocation: e.target.value })
-                            }
-                            className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none"
+                            onChange={handleChange}
+                            className="inputX"
                         >
-                            <option value="" className="text-black bg-white">Select</option>
-                            <option value="Hyd" className="text-black bg-white">Hyderabad</option>
-                            <option value="Noida" className="text-black bg-white">Noida</option>
-                            <option value="Pune" className="text-black bg-white">Pune</option>
-                            <option value="Banglore" className="text-black bg-white">Bangalore</option>
-                            <option value="Chennai" className="text-black bg-white">Chennai</option>
+                            <option value="">Select Center *</option>
+                            {CENTERS.map((c) => (
+                                <option key={c} value={c}>{c}</option>
+                            ))}
                         </select>
-                    </div>
+                    </>
+                )}
 
-                    {/* Checkboxes */}
-                    <div className="flex items-center gap-6 text-gray-300">
-                        <label className="flex items-center gap-2">
+                {/* ===== Professional / Instructor Fields ===== */}
+                {(userData.roleType === "professional" ||
+                    userData.roleType === "instructor") && (
+                        <>
                             <input
-                                type="checkbox"
-                                checked={userData.isInstructor}
-                                onChange={(e) =>
-                                    setUserData({
-                                        ...userData,
-                                        isInstructor: e.target.checked,
-                                    })
-                                }
+                                name="organisationName"
+                                placeholder="Organisation Name*"
+                                value={userData.organisationName}
+                                onChange={handleChange}
+                                className="inputX"
                             />
-                            Instructor
-                        </label>
 
-                        <label className="flex items-center gap-2">
                             <input
-                                type="checkbox"
-                                checked={userData.isOnline}
-                                onChange={(e) =>
-                                    setUserData({ ...userData, isOnline: e.target.checked })
-                                }
+                                name="currentRole"
+                                placeholder="Current Role*"
+                                value={userData.currentRole}
+                                onChange={handleChange}
+                                className="inputX"
                             />
-                            Online
-                        </label>
+                        </>
+                    )}
 
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={userData.isPlaced}
-                                onChange={(e) =>
-                                    setUserData({ ...userData, isPlaced: e.target.checked })
-                                }
-                            />
-                            Placed
-                        </label>
-                    </div>
+                {/* Create Button */}
+                <button
+                    onClick={signUp}
+                    disabled={loading}
+                    className="w-full max-w-sm bg-blue-500 py-3 rounded-full font-semibold hover:bg-blue-600 transition mt-4"
+                >
+                    {loading ? "Creating..." : "Create account"}
+                </button>
 
-                    {/* Button */}
-                    <button
-                        type="button"
-                        onClick={signUp}
-                        className="cursor-pointer w-full py-3 mt-4 text-white font-medium rounded-lg bg-linear-to-r from-purple-600 to-blue-500 hover:opacity-90 transition"
-                    >
-                        {loading ? "Creating..." : "Create Account"}
-                    </button>
-
-                </form>
+                {/* Signin redirect */}
+                <p className="text-gray-400 mt-6">
+                    Already have an account?{" "}
+                    <Link to="/signin" className="text-blue-500 hover:underline">
+                        Sign in
+                    </Link>
+                </p>
             </div>
+
+            {/* Tailwind helper style */}
+            <style>{`
+      .inputX {
+        width: 100%;
+        max-width: 380px;
+        margin-bottom: 14px;
+        padding: 12px 14px;
+        background: black;
+        border: 1px solid #2f3336;
+        border-radius: 6px;
+        outline: none;
+        color: white;
+      }
+      .inputX:focus {
+        border-color: #1d9bf0;
+      }
+    `}</style>
         </div>
     );
+
 }
 
 export default Signup;
+
+
+// /*
+//   Based on TailwindCSS recommendations,
+//   consider using classes instead of the `@apply` directive
+//   @see https://tailwindcss.com/docs/reusing-styles#avoiding-premature-abstraction
+// */
+// .inputX {
+//   @apply w-full max-w-[380px] border text-[white] mb-3.5 px-3.5 py-3 rounded-md border-solid border-[#2f3336] focus:border-[#1d9bf0];
+//   background: black;
+//   outline: none;
+// }

@@ -19,6 +19,18 @@ const profile = async (req, res, next) => {
 
         //step 2 : return user details but not password
 
+        // followers = accepted requests where I am receiver
+        // const followersCount = await Connection.countDocuments({
+        //     receiver: Id,
+        //     status: "accepted",
+        // });
+
+        // // following = accepted requests where I am requester
+        // const followingCount = await Connection.countDocuments({
+        //     requester: Id,
+        //     status: "accepted",
+        // });
+
         res.status(200).json({ success: true, message: "ok", data: user })
 
     } catch (error) {

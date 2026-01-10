@@ -1,116 +1,100 @@
-import axios from 'axios';
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useDispatch } from "react-redux"
-import { signIn } from '../features/authSlice.js'
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { signIn } from "../features/authSlice.js";
+import { FaGoogle, FaApple } from "react-icons/fa";
 
 function SignIn() {
-
     const [credentials, setCredentials] = useState({
         email: "",
         password: "",
     });
-    const [loading, setLoading] = useState(false);
-    const dispatch = useDispatch()
+
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
-
-    // async function signIn(){
-    //     try {
-    //         setLoading(true)
-    //         /*
-    //         if we want access cookies in client side we need to pass {withCredentials:true} by default its true
-    //         */
-    //         const user = await axios.post("http://localhost:3000/api/auth/signIn",credentials,{withCredentials:true})
-
-
-    //         console.log(user,"userfrom backend")
-    //         if(!user.data.success){
-    //             alert("Invalid email or password");
-    //             setLoading(false);
-    //             return;
-    //         }
-
-    //         if(user.data.success){
-    //             setCredentials({ email: "", password: "" });
-    //             navigate("/home")
-    //         }
-
-    //         setLoading(false);
-
-
-    //     } catch (error) {
-    //     console.log(error,"ERROR IN SIGN_IN") 
-    //     setLoading(false)
-    //     }
-    // }
-
     async function login(e) {
-        e.preventDefault()
-
+        e.preventDefault();
         try {
-            const user = await dispatch(signIn(credentials)).unwrap()
-            console.log(user, "Login User")
-            navigate("/home")
-            /*
-            👉 .unwrap() converts:
-
-                fulfilled → resolved promise
-
-                rejected → thrown error
-            */
+            const user = await dispatch(signIn(credentials)).unwrap();
+            console.log(user, "Login User");
+            navigate("/home");
         } catch (error) {
-            console.log(error, "Login Not Successful")
+            console.log(error, "Login Not Successful");
+            toast.error("Invalid email or password", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-700 via-black to-blue-900 p-4">
-            <div className="w-full max-w-md backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-xl">
+        <div className="min-h-screen bg-black flex text-white">
 
-                <h1 className="text-3xl font-bold text-white text-center mb-6">
-                    Sign In
+            {/* ===== Left Logo Section ===== */}
+            <div className="hidden lg:flex w-1/2 items-center justify-center bg-none flex-col gap-6">
+                {/* <h1 className="text-5xl font-extrabold mb-6">
+                    Create your account
+                </h1> */}
+                {/* <h1 className="text-[250px] font-extrabold tracking-tight">C</h1> */}
+                <img src="./logo.png" alt="" className="w-[58%] rounded-2xl " />
+            </div>
+
+            {/* ===== Right SignIn Panel ===== */}
+            <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16">
+
+                <h1 className="text-5xl font-extrabold mb-6 pb-5">
+                    Sign in to Connexa
                 </h1>
 
-                <form className="space-y-6">
 
-                    {/* Email */}
-                    <div>
-                        <label className="text-sm text-gray-300">Email</label>
-                        <input
-                            type="email"
-                            value={credentials.email}
-                            onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-                            className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none focus:border-purple-400 transition"
-                            placeholder="Enter your email"
-                        />
-                    </div>
 
-                    {/* Password */}
-                    <div>
-                        <label className="text-sm text-gray-300">Password</label>
-                        <input
-                            type="password"
-                            value={credentials.password}
-                            onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                            className="w-full mt-1 p-3 bg-white/10 text-white border border-white/20 rounded-lg outline-none focus:border-purple-400 transition"
-                            placeholder="Enter your password"
-                        />
-                    </div>
+                {/* Email Input */}
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={credentials.email}
+                    onChange={(e) =>
+                        setCredentials({ ...credentials, email: e.target.value })
+                    }
+                    className="w-full max-w-sm mb-4 px-4 py-3 rounded-md bg-black border border-gray-700 focus:border-blue-500 outline-none"
+                />
 
-                    {/* Button */}
-                    <button
-                        type="button"
-                        onClick={login}
-                        className="cursor-pointer w-full py-3 mt-4 text-white font-medium rounded-lg bg-linear-to-r from-purple-600 to-blue-500 hover:opacity-90 transition"
-                    >
-                        {loading ? "Signing In..." : "Sign In"}
-                    </button>
+                {/* Password Input */}
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={credentials.password}
+                    onChange={(e) =>
+                        setCredentials({ ...credentials, password: e.target.value })
+                    }
+                    className="w-full max-w-sm mb-6 px-4 py-3 rounded-md bg-black border border-gray-700 focus:border-blue-500 outline-none"
+                />
 
-                </form>
+                {/* Sign In Button */}
+                <button
+                    onClick={login}
+                    className="w-full max-w-sm bg-blue-500 py-3 rounded-full font-semibold hover:bg-blue-600 transition mb-6"
+                >
+                    Sign In
+                </button>
+
+                {/* Signup Redirect */}
+                <p className="text-gray-400">
+                    Don’t have an account?{" "}
+                    <Link to="/signup" className="text-blue-500 hover:underline">
+                        Create account
+                    </Link>
+                </p>
             </div>
         </div>
     );
 }
 
-export default SignIn
+export default SignIn;

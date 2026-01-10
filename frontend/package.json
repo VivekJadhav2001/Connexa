@@ -14,7 +14,6 @@
     "@tailwindcss/vite": "^4.1.17",
     "axios": "^1.13.2",
     "emoji-picker-react": "^4.16.1",
-    "lucide-react": "^0.561.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-icons": "^5.5.0",
