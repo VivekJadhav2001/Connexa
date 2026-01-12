@@ -5,31 +5,15 @@ import { Comment } from "../models/comments.model.js"
 
 const createPost = async (req, res) => {
     try {
-        const {
-            postCategory,
-            contentType,
-            content,
-            caption,
-            referralDetails,
-            visibility,
-        } = req.body;
+        const { postCategory, contentType, content, caption, referralDetails, visibility } = req.body;
+
+        // Parse referral details if it's JSON string
+        const parsedReferral = postCategory === "referral" && referralDetails
+            ? JSON.parse(referralDetails)
+            : undefined;
 
         if (!postCategory || !contentType || !content) {
-            return res.status(400).json({
-                success: false,
-                message: "Required fields missing",
-            });
-        }
-
-        // ✅ Referral authorization
-        if (
-            postCategory === "referral" &&
-            !req.userDecoded.isVerified
-        ) {
-            return res.status(403).json({
-                success: false,
-                message: "Only verified professionals can post referrals",
-            });
+            return res.status(400).json({ success: false, message: "Required fields missing" });
         }
 
         const post = await Post.create({
@@ -38,23 +22,18 @@ const createPost = async (req, res) => {
             contentType,
             content,
             caption,
-            referralDetails: postCategory === "referral" ? referralDetails : undefined,
+            referralDetails: parsedReferral,
             visibility,
+            media: req.files, // array of uploaded files
         });
 
-        res.status(201).json({
-            success: true,
-            message: "Post created successfully",
-            data: post,
-        });
+        res.status(201).json({ success: true, message: "Post created successfully", data: post });
     } catch (error) {
         console.error("Create Post Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error",
-        });
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
 
 
 const getMyPosts = async (req, res) => {
@@ -90,10 +69,11 @@ const getMyPosts = async (req, res) => {
 const getAllPosts = async (req, res) => {
     try {
 
-        const allPosts = await Post.find({})
+        const allPosts = await Post.find()
             .populate("author", "firstName lastName profilePicture")
-            .sort({ createdAt: -1 })
-            .limit(20)
+            .populate("likes.user", "firstName lastName profilePicture")
+            .populate("comments.user", "firstName lastName profilePicture")
+            .sort({ createdAt: -1 });
 
         console.log(allPosts, "ALL POSTS")
 
@@ -186,48 +166,34 @@ const updatePost = async (req, res) => {
 };
 
 
-const toggleLike = async (req, res) => {
-    try {
-        const userId = req.userDecoded.id;
-        const postId = req.params.postId;
+const toggleLike = async (req,res)=>{
+  const userId = req.userDecoded.id;
+  const postId = req.params.postId;
 
-        const post = await Post.findById(postId);
-        if (!post) {
-            return res.status(404).json({
-                success: false,
-                message: "Post not found",
-            });
-        }
+  const post = await Post.findById(postId);
+  if(!post) return res.status(404).json({message:"Post not found"});
 
-        const existingLike = await Like.findOne({ userId, postId });
+  const alreadyLiked = post.likes.find(
+    l => l.user.toString() === userId
+  );
 
-        if (existingLike) {
-            await Like.deleteOne({ _id: existingLike._id });
+  if(alreadyLiked){
+    post.likes = post.likes.filter(
+      l => l.user.toString() !== userId
+    );
+    post.likesCount -= 1;
+    await post.save();
 
-            await Post.findByIdAndUpdate(postId, {
-                $inc: { likesCount: -1 },
-            });
+    return res.json({ success:true, message:"Unliked" });
+  }
 
-            return res.status(200).json({
-                success: true,
-                message: "Post unliked",
-            });
-        }
+  post.likes.push({ user: userId });
+  post.likesCount += 1;
+  await post.save();
 
-        await Like.create({ userId, postId });
+  res.json({ success:true, message:"Liked" });
+}
 
-        await Post.findByIdAndUpdate(postId, {
-            $inc: { likesCount: 1 },
-        });
-
-        res.status(200).json({
-            success: true,
-            message: "Post liked",
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Server error" });
-    }
-};
 
 
 const getReferalPosts = async (req, res) => {
@@ -256,167 +222,141 @@ const getReferalPosts = async (req, res) => {
 };
 
 
-const createComment = async (req, res) => {
+const createComment = async (req,res)=>{
+  const userId = req.userDecoded.id;
+  const postId = req.params.postId;
+  const { comment } = req.body;
+
+  const post = await Post.findById(postId);
+  if(!post) return res.status(404).json({message:"Post not found"});
+
+  post.comments.push({ user: userId, comment });
+  post.commentsCount += 1;
+  await post.save();
+
+  res.json({ success:true, message:"Comment added" });
+}
+
+
+
+const deleteComment = async (req, res) => {
     try {
         const userId = req.userDecoded.id;
-        const postId = req.params.postId;
+        const { commentId } = req.params;
+
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).json({
+                success: false,
+                message: "Comment not found",
+            });
+        }
+
+        if (comment.userId.toString() !== userId) {
+            return res.status(403).json({
+                success: false,
+                message: "Not authorized to delete this comment",
+            });
+        }
+
+        await Comment.findByIdAndDelete(commentId);
+
+        await Post.findByIdAndUpdate(comment.postId, {
+            $inc: { commentsCount: -1 },
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Comment deleted",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server error",
+        });
+    }
+};
+
+
+const editComment = async (req, res) => {
+    try {
+        const userId = req.userDecoded.id;
+        const { commentId } = req.params;
         const { comment } = req.body;
 
         if (!comment) {
             return res.status(400).json({
                 success: false,
-                message: "Comment required",
+                message: "Updated comment text is required",
             });
         }
 
-        const post = await Post.findById(postId);
-        if (!post) {
+        const existingComment = await Comment.findById(commentId);
+        if (!existingComment) {
             return res.status(404).json({
                 success: false,
-                message: "Post not found",
+                message: "Comment not found",
             });
         }
 
-        await Comment.create({
-            userId,
-            postId,
-            comment,
-        });
+        if (existingComment.userId.toString() !== userId) {
+            return res.status(403).json({
+                success: false,
+                message: "Not authorized to edit this comment",
+            });
+        }
 
-        await Post.findByIdAndUpdate(postId, {
-            $inc: { commentsCount: 1 },
-        });
+        existingComment.comment = comment;
+        await existingComment.save();
 
-        res.status(201).json({
+        res.status(200).json({
             success: true,
-            message: "Comment added",
+            message: "Comment updated",
+            data: existingComment,
         });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Internal Server error" });
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server error",
+        });
     }
-};
-
-
-const deleteComment = async (req, res) => {
-  try {
-    const userId = req.userDecoded.id;
-    const { commentId } = req.params;
-
-    const comment = await Comment.findById(commentId);
-    if (!comment) {
-      return res.status(404).json({
-        success: false,
-        message: "Comment not found",
-      });
-    }
-
-    if (comment.userId.toString() !== userId) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to delete this comment",
-      });
-    }
-
-    await Comment.findByIdAndDelete(commentId);
-
-    await Post.findByIdAndUpdate(comment.postId, {
-      $inc: { commentsCount: -1 },
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Comment deleted",
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server error",
-    });
-  }
-};
-
-
-const editComment = async (req, res) => {
-  try {
-    const userId = req.userDecoded.id;
-    const { commentId } = req.params;
-    const { comment } = req.body;
-
-    if (!comment) {
-      return res.status(400).json({
-        success: false,
-        message: "Updated comment text is required",
-      });
-    }
-
-    const existingComment = await Comment.findById(commentId);
-    if (!existingComment) {
-      return res.status(404).json({
-        success: false,
-        message: "Comment not found",
-      });
-    }
-
-    if (existingComment.userId.toString() !== userId) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to edit this comment",
-      });
-    }
-
-    existingComment.comment = comment;
-    await existingComment.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Comment updated",
-      data: existingComment,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server error",
-    });
-  }
 };
 
 const getAllCommentsByPost = async (req, res) => {
-  try {
-    const { postId } = req.params;
+    try {
+        const { postId } = req.params;
 
-    if (!postId) {
-      return res.status(400).json({
-        success: false,
-        message: "Post ID is required",
-      });
+        if (!postId) {
+            return res.status(400).json({
+                success: false,
+                message: "Post ID is required",
+            });
+        }
+
+        const comments = await Comment.find({ postId })
+            .populate("userId", "firstName lastName profilePicture")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            message: "Comments fetched successfully",
+            data: comments,
+        });
+
+    } catch (error) {
+        console.error("Get Comments Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
     }
-
-    const comments = await Comment.find({ postId })
-      .populate("userId", "firstName lastName profilePicture")
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      message: "Comments fetched successfully",
-      data: comments, 
-    });
-
-  } catch (error) {
-    console.error("Get Comments Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
 };
 
 
-
 /*
-delete comment 
-edit comment
+Reply to a comment
 */
 
 

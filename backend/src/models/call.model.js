@@ -1,10 +1,19 @@
 import mongoose from "mongoose";
 
 const callSchema = new mongoose.Schema({
-  caller: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  caller: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "User" 
+  },
+  receiver: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "User" 
+  },
 
-  callType: { type: String, enum: ["audio", "video"] },
+  callType: { 
+    type: String, 
+    enum: ["audio", "video"] 
+  },
 
   status: {
     type: String,
@@ -15,7 +24,10 @@ const callSchema = new mongoose.Schema({
   startedAt: Date,
   endedAt: Date,
 
-  isPaidCall: { type: Boolean, default: false },
+  isPaidCall: { 
+    type: Boolean, 
+    default: false 
+  },
 
 }, { timestamps: true });
 

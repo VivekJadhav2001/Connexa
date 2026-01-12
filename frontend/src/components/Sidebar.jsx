@@ -4,6 +4,8 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import { CiMail } from "react-icons/ci";
 import { CgProfile } from "react-icons/cg";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import CreatePostModal from "./CreatePostModal";
 
 const icons = [
   {
@@ -30,8 +32,12 @@ const icons = [
 
 export function Sidebar() {
 
+  const [modalOpen, setModalOpen] = useState(false)
+
     const navigate = useNavigate()
   return (
+    <>
+    
     <aside className="w-64 h-screen p-4 flex flex-col justify-between fixed">
       
       {/* Top Section */}
@@ -48,9 +54,12 @@ export function Sidebar() {
           </div>
         ))}
 
-        <button className="bg-blue-500 hover:bg-blue-600 w-full py-3 rounded-full font-semibold mt-4">
-          Post
-        </button>
+        <button
+            onClick={() => setModalOpen(true)}
+            className="bg-blue-500 hover:bg-blue-600 w-full py-3 rounded-full font-semibold mt-4"
+          >
+            Post
+          </button>
       </div>
 
       {/* Bottom User Menu placeholder */}
@@ -59,5 +68,11 @@ export function Sidebar() {
       </div>
 
     </aside>
+
+    <CreatePostModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+      />
+    </>
   );
 }

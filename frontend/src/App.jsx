@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { useEffect } from "react"
 import { fetchUser } from "./features/userSlice"
 import { ToastContainer } from "react-toastify";
+import { fetchAllPosts } from "./features/postSlice"
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
 
   useEffect(() => {
     dispatch(fetchUser())
+    dispatch(fetchAllPosts())
     document.documentElement.classList.toggle("dark", mode === "dark");
   }, [mode]);
   return (

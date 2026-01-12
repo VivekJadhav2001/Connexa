@@ -5,14 +5,14 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String },
 
   email: { type: String, required: true, unique: true },
-  phoneNumber: { type: String, required: true, unique: true }, // string better
+  phoneNumber: { type: Number, required: true, unique: true }, // string better
   password: { type: String, required: true },
 
   profilePicture: { type: String },
 
   roleType: {
     type: String,
-    enum: ["student", "professional", "instructor", "admin"],
+    enum: ["student", "professional", "admin"],
     default: "student",
   },
 
@@ -35,23 +35,51 @@ const userSchema = new mongoose.Schema({
       return this.roleType === "student";
     },
   },
-  isOnline: { type: Boolean, default: false },
+  isOnline: {
+    type: Boolean,
+    default: false
+  },
+  socialLinks: {
+    github: {
+      type: String
+    },
+    X: {
+      type: String
+    },
+    personalWebsite: {
+      type: String
+    },
+  },
+  skills: [String],
+  resumeLink: {
+    type: String
+  },
+
 
   // ===== Professional / Instructor fields =====
   organisationName: {
     type: String,
     required: function () {
-      return this.roleType === "professional" || this.roleType === "instructor";
-    },
-  },
-  currentRole: {
-    type: String,
-    required: function () {
-      return this.roleType === "professional" || this.roleType === "instructor";
+      return this.roleType === "professional"
     },
   },
 
   isPlaced: { type: Boolean, default: false },
+  jobRole: {
+    type: String,
+    required: function () {
+      return this.roleType === "professional"
+    }
+  },
+  jobLocation: {
+    type: String,
+    required: function () {
+      return this.roleType === "professional"
+    }
+  },
+  experienceYears: Number,
+  skills: [String],
+
 
   // ===== Verification =====
   isVerified: { type: Boolean, default: false },
@@ -85,6 +113,12 @@ const userSchema = new mongoose.Schema({
   },
 
   lastSeen: { type: Date },
+
+
+  //Admin
+  adminSecretKey:{
+    type:String
+  }
 
 }, { timestamps: true });
 

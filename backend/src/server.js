@@ -7,11 +7,12 @@ import userRoutes from "./routes/user.routes.js"
 import postRoutes from "./routes/post.routes.js"
 import authRoutes from "./routes/auth.routes.js"
 import adminRoutes from "./routes/admin.routes.js"
-
+import createIndividual from "./routes/create.routes.js"
 
 dotenv.config()
 
 const originPORTS = ["http://localhost:5173","http://localhost:5174"]
+
 
 const app = express()
 app.use(express.json())
@@ -60,6 +61,9 @@ app.use("/api/post",postRoutes)
 
 //ADMIN ROUTES
 app.use("/admin/users",adminRoutes)
+
+//Create admin/user/professionals
+app.use("/api/create",createIndividual)
 
 
 //Connecting Database

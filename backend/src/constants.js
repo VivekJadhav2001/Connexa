@@ -1,10 +1,11 @@
 import fs from "fs"
 
 const TYPE_OF_POST = {
-    Referral_Post: "referral-post",
-    General_Post: "general_post"
+    Referral_Post: "referral",
+    General_Post: "general",
+    Project_Post:"project",
+    Poll_Post: "poll"
 }
-
 
 function userLog(userEmail) {
     const date = new Date()

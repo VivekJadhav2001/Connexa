@@ -1,7 +1,7 @@
 
 import { FeedHeader } from "../components/FeedHeader";
 import { WhatsHappening } from "../components/WhatsHappening";
-import { Post } from "../components/Post";
+import Post from "../components/Post";
 import { RightSidebar } from "../components/RightSidebar";
 import { Sidebar } from "../components/Sidebar";
 import { useSelector } from "react-redux";
@@ -9,9 +9,14 @@ import { useSelector } from "react-redux";
 
 export default function Home() {
 
-  const state = useSelector((state)=>state)
+  const state = useSelector((state) => state)
 
-  // console.log(state,"home page state")
+  const allPosts = useSelector((state) => state.posts.posts)
+  const loading = useSelector((state) => state.posts.loading)
+
+  // console.log(state, "home page state")
+  console.log(allPosts,"All posts in home")
+
 
   return (
     <div className="min-h-screen bg-black text-white flex justify-center">
@@ -32,11 +37,20 @@ export default function Home() {
 
 
           {/* Posts */}
-          <div className="divide-y divide-gray-800">
-            <Post />
-            <Post />
-            <Post />
-          </div>
+
+          {loading ? <p>Loading...</p> : (
+            <div className="divide-y divide-gray-800">
+              {allPosts?.map((post) => (
+                <Post key={post._id} post={post} />
+              ))}
+            </div>
+          )}
+
+          {/* <div className="divide-y divide-gray-800">
+            {allPosts?.map((post)=>(
+              <Post post={post} />
+            ))}
+          </div> */}
         </main>
 
 
