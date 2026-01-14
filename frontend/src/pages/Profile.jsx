@@ -8,11 +8,11 @@ import { FaChalkboardTeacher } from "react-icons/fa";
 export default function Profile() {
     const navigate = useNavigate();
 
-    const userData = useSelector((state)=>state.user.currentUser)
-    console.log(userData,"User Data in profile")
+    const userData = useSelector((state) => state.user.currentUser)
+    console.log(userData, "User Data in profile")
     const JoinedDate = userData?.createdAt
-  ? getJoinedDate(userData.createdAt)
-  : "";
+        ? getJoinedDate(userData.createdAt)
+        : "";
 
 
 
@@ -47,17 +47,17 @@ export default function Profile() {
 
                 {userData?.profilePicture ? (
                     <img
-                    src={userData?.profilePicture}
-                    alt="profile"
-                    className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
-                />
+                        src={userData?.profilePicture}
+                        alt="profile"
+                        className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
+                    />
 
                 ) : (
                     <img
-                    src="/avatar.png"
-                    alt="profile"
-                    className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
-                />
+                        src="/avatar.png"
+                        alt="profile"
+                        className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
+                    />
                 )}
                 <img
                     src="/avatar.png"
@@ -89,7 +89,7 @@ export default function Profile() {
                     <div className="flex gap-4 text-gray-400 text-sm">
                         <span>📍 {userData?.centerLocation}</span>
                         <span>📅 Joined {JoinedDate}</span>
-                        {userData?.roleType === "student" ? <span className="flex gap-1.5 items-center justify-center"><PiStudentBold size={22}/> Student</span> : <span className="flex gap-1.5 items-center justify-center"><FaChalkboardTeacher size={22}/> Instructor</span>}
+                        {userData?.roleType === "student" ? <span className="flex gap-1.5 items-center justify-center"><PiStudentBold size={22} /> Student</span> : <span className="flex gap-1.5 items-center justify-center"><FaChalkboardTeacher size={22} /> Instructor</span>}
                         <span>{userData?.courseType}</span>
                     </div>
 

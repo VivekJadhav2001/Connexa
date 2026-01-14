@@ -61,6 +61,7 @@ function Post({ post }) {
                         </div>
                     )}
 
+
                     {post.contentType === "video" && (
                         <video
                             src={post.content}

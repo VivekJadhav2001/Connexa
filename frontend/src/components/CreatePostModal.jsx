@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
+import { useDispatch } from "react-redux";
 import api from "../utils/api";
+import { createPost } from "../features/postSlice";
 
 /* Image Icon */
 const ImageIcon = (props) => (
@@ -12,6 +14,8 @@ const ImageIcon = (props) => (
 );
 
 export default function CreatePostModal({ isOpen, onClose }) {
+
+    const dispatch = useDispatch();
     const [postCategory, setPostCategory] = useState("general");
     const [content, setContent] = useState("");
     const [caption, setCaption] = useState("");
@@ -74,19 +78,37 @@ export default function CreatePostModal({ isOpen, onClose }) {
 
         mediaFiles.forEach((media) => formData.append("media", media.file));
 
-        try {
-            await api.post("/post/createPost", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-            onClose();
-            setContent("");
-            setCaption("");
-            setMediaFiles([]);
-            setPostCategory("general");
-            setReferralDetails({ company: "", jobRole: "", applyLink: "" });
-        } catch (error) {
-            console.error(error);
-        }
+        // try {
+        //     await api.post("/post/createPost", formData, {
+        //         headers: { "Content-Type": "multipart/form-data" },
+        //     });
+        //     onClose();
+        //     setContent("");
+        //     setCaption("");
+        //     setMediaFiles([]);
+        //     setPostCategory("general");
+        //     setReferralDetails({ company: "", jobRole: "", applyLink: "" });
+        // } catch (error) {
+        //     console.error(error);
+        // }
+        dispatch(
+            createPost({
+                postCategory,
+                contentType,
+                content,
+                caption,
+                visibility,
+                referralDetails
+            })
+        )
+
+        onClose();
+        setContent("");
+        setCaption("");
+        setMediaFiles([]);
+        setPostCategory("general");
+        setReferralDetails({ company: "", jobRole: "", applyLink: "" });
+
     }
 
 
