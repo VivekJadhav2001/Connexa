@@ -53,7 +53,8 @@ dotenv
 jwt
 nodemon
 mongoose
-zegoCloude (@zegoclode uikit prebuilt)
+zegoCloude (@zegoclode uikit prebuilt) Find Alternative Approach
+Firebase Google Maps API
 
 Student and Professional Connection to char and video call and Admin Dashboard(main)
 ```
