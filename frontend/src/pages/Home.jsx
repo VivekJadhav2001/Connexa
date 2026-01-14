@@ -15,7 +15,7 @@ export default function Home() {
   const loading = useSelector((state) => state.posts.loading)
 
   // console.log(state, "home page state")
-  console.log(allPosts,"All posts in home")
+  // console.log(allPosts,"All posts in home")
 
 
   return (

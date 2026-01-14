@@ -1,12 +1,19 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BATCHES, CENTERS, COURSES } from "../constants";
+import { BATCHES, CENTERS, COMMON_FIELDS, COURSES, NAME_FIELDS, PROFESSIONAL_FIELDS, STUDENT_FIELDS } from "../constants";
 import { toast } from "react-toastify";
+import { BiSolidHide, BiSolidShow } from "react-icons/bi"
+import { getStrengthColor } from "../utils/passwordUtils";
+import FormField from "../components/UI/FormField";
+
+
 
 function Signup() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [passwordStrength, setPasswordStrength] = useState(0);
 
     const [userData, setUserData] = useState({
         firstName: "",
@@ -14,19 +21,27 @@ function Signup() {
         email: "",
         phoneNumber: "",
         password: "",
-
         roleType: "student", // default
-
         // Student fields
         batch: "",
         centerLocation: "",
         courseType: "",
         isOnline: false,
-
         // Professional / Instructor fields
         organisationName: "",
         currentRole: "",
     });
+
+    const evaluatePassword = (password) => {
+        let score = 0;
+        if (password.length >= 8) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[0-9]/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+        setPasswordStrength(score);
+    };
+
+    const strengthColor = getStrengthColor(passwordStrength);
 
     function handleChange(e) {
         setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -137,7 +152,7 @@ function Signup() {
 
             {/* ===== Left Logo Section ===== */}
             <div className="hidden lg:flex w-1/2 items-center justify-center bg-none flex-col gap-6">
-            <h1 className="text-5xl font-extrabold mb-6">
+                <h1 className="text-5xl font-extrabold mb-6">
                     Create your account
                 </h1>
                 {/* <h1 className="text-[250px] font-extrabold tracking-tight">C</h1> */}
@@ -147,7 +162,7 @@ function Signup() {
             {/* ===== Right Signup Panel ===== */}
             <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16">
 
-                
+
 
                 {/* Role Selector */}
                 <select
@@ -162,116 +177,108 @@ function Signup() {
                 </select>
 
                 {/* Common Fields */}
-                <input
+
+                <FormField
                     name="email"
                     placeholder="Email*"
                     value={userData.email}
                     onChange={handleChange}
-                    className="inputX"
                 />
 
-                <input
+                <FormField
+                    type={showPassword ? "text" : "password"}
                     name="password"
-                    type="password"
                     placeholder="Password*"
                     value={userData.password}
-                    onChange={handleChange}
-                    className="inputX"
+                    onChange={(e) => {
+                        handleChange(e);
+                        evaluatePassword(e.target.value);
+                    }}
+                    rightIcon={showPassword ? <BiSolidHide /> : <BiSolidShow />}
+                    onRightIconClick={() => setShowPassword(!showPassword)}
                 />
 
+                {/* Strength Bar */}
+                {userData.password && (
+                    <div className="w-full max-w-[380px] mb-4">
+                        <div className="h-1 w-full bg-gray-700 rounded">
+                            <div
+                                className={`h-1 rounded transition-all duration-300 ${strengthColor}`}
+                                style={{
+                                    width: `${(passwordStrength / 4) * 100}%`,
+                                }}
+                            ></div>
+                        </div>
+                        <p className="text-xs text-right mt-1 text-gray-400">
+                            {passwordStrength <= 1 && "Weak password"}
+                            {passwordStrength === 2 && "Moderate password"}
+                            {passwordStrength >= 3 && "Strong password"}
+                        </p>
+                    </div>
+                )}
+
                 <div className="flex gap-3">
-                    <input
-                        name="firstName"
-                        placeholder="First name*"
-                        value={userData.firstName}
-                        onChange={handleChange}
-                        className="w-full max-w-[185px] border text-[white] mb-3.5 px-3.5 py-3 rounded-md border-solid border-[#2f3336] focus:border-[#1d9bf0]"
-                    />
-                    <input
-                        name="lastName"
-                        placeholder="Last name"
-                        value={userData.lastName}
-                        onChange={handleChange}
-                        className="w-full max-w-[185px] border text-[white] mb-3.5 px-3.5 py-3 rounded-md border-solid border-[#2f3336] focus:border-[#1d9bf0]"
-                    />
+                    {NAME_FIELDS.map((field) => (
+                        <FormField
+                            key={field.name}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={userData[field.name]}
+                            onChange={handleChange}
+                            maxWidth={field.maxWidth}
+                        />
+                    ))}
                 </div>
 
-                <input
+
+                <FormField
                     name="phoneNumber"
                     placeholder="Phone number*"
                     value={userData.phoneNumber}
                     onChange={handleChange}
-                    className="inputX"
                 />
 
+
+
                 {/* ===== Student Fields ===== */}
-                {userData.roleType === "student" && (
-                    <>
-                        <select
-                            name="batch"
-                            value={userData.batch}
+                {userData.roleType === "student" &&
+                    STUDENT_FIELDS.map((field) => (
+                        <FormField
+                            key={field.name}
+                            type="select"
+                            name={field.name}
+                            value={userData[field.name]}
                             onChange={handleChange}
-                            className="inputX"
                         >
-                            <option value="">Select Batch *</option>
-                            {BATCHES.map((b) => (
-                                <option key={b} value={b}>{b}</option>
+                            <option value="">{field.placeholder}</option>
+                            {field.options.map((opt) => (
+                                <option key={opt} value={opt}>
+                                    {opt}
+                                </option>
                             ))}
-                        </select>
+                        </FormField>
+                    ))}
 
-                        <select
-                            name="courseType"
-                            value={userData.courseType}
-                            onChange={handleChange}
-                            className="inputX"
-                        >
-                            <option value="">Select Course *</option>
-                            {COURSES.map((c) => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
-                        </select>
-
-                        <select
-                            name="centerLocation"
-                            value={userData.centerLocation}
-                            onChange={handleChange}
-                            className="inputX"
-                        >
-                            <option value="">Select Center *</option>
-                            {CENTERS.map((c) => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
-                        </select>
-                    </>
-                )}
 
                 {/* ===== Professional / Instructor Fields ===== */}
                 {(userData.roleType === "professional" ||
-                    userData.roleType === "instructor") && (
-                        <>
-                            <input
-                                name="organisationName"
-                                placeholder="Organisation Name*"
-                                value={userData.organisationName}
-                                onChange={handleChange}
-                                className="inputX"
-                            />
+                    userData.roleType === "instructor") &&
+                    PROFESSIONAL_FIELDS.map((field) => (
+                        <FormField
+                            key={field.name}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={userData[field.name]}
+                            onChange={handleChange}
+                        />
+                    ))}
 
-                            <input
-                                name="currentRole"
-                                placeholder="Current Role*"
-                                value={userData.currentRole}
-                                onChange={handleChange}
-                                className="inputX"
-                            />
-                        </>
-                    )}
 
                 {/* Create Button */}
                 <button
                     onClick={signUp}
                     disabled={loading}
-                    className="w-full max-w-sm bg-blue-500 py-3 rounded-full font-semibold hover:bg-blue-600 transition mt-4"
+                    className="w-full max-w-sm bg-blue-500 py-6 rounded-full font-semibold hover:bg-blue-600 transition mt-4"
                 >
                     {loading ? "Creating..." : "Create account"}
                 </button>
