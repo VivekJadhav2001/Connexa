@@ -1,59 +1,5 @@
 import mongoose from "mongoose";
 
-const postSchema = new mongoose.Schema(
-  {
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-
-    postCategory: {
-      type: String,
-      enum: ["poll", "referral", "general", "project"],
-      required: true,
-    },
-
-    contentType: {
-      type: String,
-      enum: ["text", "image", "blog", "video"],
-      required: true,
-    },
-
-    content: { type: String, required: true },
-    caption: { type: String },
-
-    referralDetails: {
-      company: String,
-      jobRole: String,
-      applyLink: String,
-      expiresAt: Date,
-    },
-
-    // Embedded likes (only user reference)
-    likes: [
-      {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      },
-    ],
-
-    // Embedded comments
-    comments: [
-      {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        comment: { type: String, required: true },
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
-
-    likesCount: { type: Number, default: 0 },
-    commentsCount: { type: Number, default: 0 },
-
-    visibility: {
-      type: String,
-      enum: ["public", "connections"],
-      default: "public",
-    },
 const commentSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   comment: { type: String, required: true }
@@ -73,10 +19,7 @@ const postSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  { timestamps: true }
-);
 
-export const Post = mongoose.model("Post", postSchema);
   postCategory: {
     type: String,
     enum: ["poll", "referral", "general", "project"],
