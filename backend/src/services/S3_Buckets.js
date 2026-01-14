@@ -64,7 +64,12 @@ async function getFileFromS3(fileKey) {
         }
 
     } catch (error) {
-        console.log(error, "error while getting file")
+        console.error("S3 Get File Failed:", error);
+
+        const err = new Error("Failed to get file from S3");
+        err.statusCode = error.$metadata?.httpStatusCode || 500;
+        throw err;
+      
     }
 }
 
