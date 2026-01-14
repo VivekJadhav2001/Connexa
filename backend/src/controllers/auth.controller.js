@@ -52,11 +52,12 @@ const signUp = async (req, res) => {
     const user = new User({
       firstName,
       lastName,
+      userName: firstName + lastName,
+      fullName: firstName + " " + lastName,
       email,
       phoneNumber,
       password: hashedPassword,
       roleType,
-
       // pass all fields (mongoose will validate required ones)
       batch,
       centerLocation,

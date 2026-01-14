@@ -4,8 +4,17 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String },
 
+  fullName: {
+    type: String,
+  },
+
+  userName: {
+    type: String,
+  },
+
+
   email: { type: String, required: true, unique: true },
-  phoneNumber: { type: Number, required: true, unique: true }, // string better
+  phoneNumber: { type: Number, required: true, unique: true },
   password: { type: String, required: true },
 
   profilePicture: { type: String },
@@ -77,7 +86,12 @@ const userSchema = new mongoose.Schema({
       return this.roleType === "professional"
     }
   },
-  experienceYears: Number,
+  experienceYears: {
+    type: Number,
+    required: function () {
+      return this.roleType === "professional"
+    }
+  },
   skills: [String],
 
 
@@ -116,8 +130,8 @@ const userSchema = new mongoose.Schema({
 
 
   //Admin
-  adminSecretKey:{
-    type:String
+  adminSecretKey: {
+    type: String
   }
 
 }, { timestamps: true });

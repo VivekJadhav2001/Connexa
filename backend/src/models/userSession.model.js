@@ -11,8 +11,12 @@ const userSessionSchema = new mongoose.Schema({
         required: true
     },
     source: {
-        type: String, // logout | tab-close | crash
+        type: String, // logout | tab-close | crash,
+        enum: ["logout", "tab-close", "crash","lastLogin"],
         default: "logout",
+    },
+    deviceInfo: {
+        type: String
     },
 
 

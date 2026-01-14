@@ -3,31 +3,34 @@ import mongoose from "mongoose";
 const callSchema = new mongoose.Schema({
   caller: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: "User" 
+    ref: "User",
+    required: true 
   },
   receiver: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: "User" 
+    ref: "User",
+    required: true 
   },
 
   callType: { 
     type: String, 
-    enum: ["audio", "video"] 
+    enum: ["video"] ,
+    default: "video"
   },
 
   status: {
     type: String,
-    enum: ["initiated", "ringing", "accepted", "ended"],
+    enum: ["initiated", "ringing", "accepted", "ended","missed", "rejected"],
     default: "initiated",
   },
 
   startedAt: Date,
   endedAt: Date,
 
-  isPaidCall: { 
-    type: Boolean, 
-    default: false 
-  },
+  // isPaidCall: { 
+  //   type: Boolean, 
+  //   default: false 
+  // },
 
 }, { timestamps: true });
 
@@ -44,7 +47,7 @@ Call ringing
 
 Accept / reject
 
-Use WebRTC for actual video/audio
+Use WebRTC/ZegoCloude for actual video/audio
 
 Schema only stores metadata, not streams
 */

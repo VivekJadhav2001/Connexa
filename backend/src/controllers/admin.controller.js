@@ -31,7 +31,7 @@ export { getAllUserLogs };
 /*
 Day 0 : Build Basic Frontend for Posts and its CRUD ops, Profile Edits , make a pinned Post for admin, and also create another user profile for me(user) for sending connection requests, Make dummy data of 50 Students and build UI of admin dashboards and main app
 
-Day 1 : Store Images in Local Disk of machine using Streams (Includeing multiple imgs for posts )
+Day 1 : Store Images in Local Disk of machine using Streams (Includeing multiple imgs for posts ) X AWS S3 integration for storing images (posts and profile pics) 
 
 Day 2 : Countinue Day 1 (frontend and backend flow)
 

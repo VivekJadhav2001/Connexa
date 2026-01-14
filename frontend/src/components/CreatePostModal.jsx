@@ -71,13 +71,16 @@ export default function CreatePostModal({ isOpen, onClose }) {
         if (postCategory === "referral") {
             formData.append("referralDetails", JSON.stringify(referralDetails));
         }
-
+        
         mediaFiles.forEach((media) => formData.append("media", media.file));
+
+        console.log([...formData.entries()],"Form Data Submitted");
 
         try {
             await api.post("/post/createPost", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
+
             onClose();
             setContent("");
             setCaption("");

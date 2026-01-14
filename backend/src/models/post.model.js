@@ -1,5 +1,18 @@
 import mongoose from "mongoose";
 
+const commentSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  comment: { type: String, required: true }
+}, { timestamps: true });
+
+const likeSchema = new mongoose.Schema(
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+  },
+  { timestamps: true }
+);
+
+
 const postSchema = new mongoose.Schema({
   author: {
     type: mongoose.Schema.Types.ObjectId,
@@ -9,13 +22,13 @@ const postSchema = new mongoose.Schema({
 
   postCategory: {
     type: String,
-    enum: ["poll", "referral","general","project"],
+    enum: ["poll", "referral", "general", "project"],
     required: true,
   },
 
   contentType: {
     type: String,
-    enum: ["text", "image", "blog","video"],
+    enum: ["text", "image", "blog", "video", "carousel"],
     required: true,
   },
 
@@ -30,16 +43,11 @@ const postSchema = new mongoose.Schema({
   },
 
   // Embedded likes (only user reference)
-  likes: [{
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
-  }],
+
+  likes: [likeSchema],
 
   // Embedded comments
-  comments: [{
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    comment: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now }
-  }],
+  comments: [commentSchema],
 
   likesCount: { type: Number, default: 0 },
   commentsCount: { type: Number, default: 0 },
@@ -50,7 +58,7 @@ const postSchema = new mongoose.Schema({
     default: "public",
   }
 
-},{ timestamps:true });
+}, { timestamps: true });
 
 
-export const Post = mongoose.model("Post",postSchema)
+export const Post = mongoose.model("Post", postSchema)
