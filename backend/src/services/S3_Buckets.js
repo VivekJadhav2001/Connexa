@@ -1,9 +1,12 @@
-import {S3Client} from "@aws-sdk/client-s3"
+import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3"
 
 export const client = new S3Client({
-    region
+    region:process.env.AWS_REGION,
+    credentials:{
+        accessKeyId:process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey:process.env.AWS_SECRET_ACCESS_KEY
+    }
 })
-
 
 async function uploadFileToS3(fileBuffer, fileName, mimeType) {
 
@@ -26,9 +29,7 @@ async function uploadFileToS3(fileBuffer, fileName, mimeType) {
     };
 
     try {
-        const awsResponseOnUpload = await client.send(
-            new PutObjectCommand(params)
-        );
+        const awsResponseOnUpload = await client.send( new PutObjectCommand(params));
 
         console.log("S3 Upload Success:", {
             key: KEY,
@@ -48,11 +49,12 @@ async function uploadFileToS3(fileBuffer, fileName, mimeType) {
 
 async function getFileFromS3(fileKey) {
     const params = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: fileKey
-    };
+        Key:fileKey,
+        Bucket:process.env.AWS_BUCKET
+    }
+
     try {
-        const file = await client.send( new GetObjectCommand(params));
+        const file = await client.send(new GetObjectCommand(params))
 
         console.log(file, " File Return from S3")
 
@@ -60,12 +62,14 @@ async function getFileFromS3(fileKey) {
             stream: file.Body,
             contentType: file.ContentType
         }
+
     } catch (error) {
         console.error("S3 Get File Failed:", error);
 
         const err = new Error("Failed to get file from S3");
         err.statusCode = error.$metadata?.httpStatusCode || 500;
         throw err;
+      
     }
 }
 
