@@ -1,5 +1,3 @@
-
-
 /*
 POST   /verification/apply
 GET    /verification/status

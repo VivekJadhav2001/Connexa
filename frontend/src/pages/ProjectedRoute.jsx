@@ -1,16 +1,14 @@
-import React from 'react'
-import { Navigate } from 'react-router-dom'
+import React from "react";
+import { Navigate } from "react-router-dom";
 
-function ProjectedRoute({children}) {
+function ProjectedRoute({ children }) {
+  const accioConnectToken = document.cookie.includes("accioConnect-token");
 
-    const accioConnectToken = document.cookie.includes("accioConnect-token")
+  if (!accioConnectToken) {
+    <Navigate to="/" replace />;
+  }
 
-    if(!accioConnectToken){
-        <Navigate to="/" replace/>
-    }
-
-
-  return children
+  return children;
 }
 
-export default ProjectedRoute
+export default ProjectedRoute;

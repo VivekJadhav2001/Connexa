@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 
 const getAllUserLogs = async (req, res) => {
-  console.log(req,"Request in admin controller")
+  console.log(req, "Request in admin controller");
   try {
     const userLogsData = await fs.readFile("./src/logs/users.txt", "utf-8");
 
@@ -19,14 +19,6 @@ const getAllUserLogs = async (req, res) => {
 };
 
 export { getAllUserLogs };
-
-
-
-
-
-
-
-
 
 /*
 Day 0 : Build Basic Frontend for Posts and its CRUD ops, Profile Edits , make a pinned Post for admin, and also create another user profile for me(user) for sending connection requests, Make dummy data of 50 Students and build UI of admin dashboards and main app
@@ -58,20 +50,3 @@ Note: 1) For now focus on student and admin pannel, student can post any kind of
 
 
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

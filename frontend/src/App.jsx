@@ -1,24 +1,23 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
-import Signup from "./pages/Signup"
-import SignIn from "./pages/SignIn"
-import LandingPage from "./pages/LandingPage"
-import Home from "./pages/Home"
-import ProjectedRoute from "./pages/ProjectedRoute"
-import Profile from "./pages/Profile"
-import { useDispatch, useSelector } from "react-redux"
-import { useEffect } from "react"
-import { fetchUser } from "./features/userSlice"
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Signup from "./pages/Signup";
+import SignIn from "./pages/SignIn";
+import LandingPage from "./pages/LandingPage";
+import Home from "./pages/Home";
+import ProjectedRoute from "./pages/ProjectedRoute";
+import Profile from "./pages/Profile";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchUser } from "./features/userSlice";
 import { ToastContainer } from "react-toastify";
-import { fetchAllPosts } from "./features/postSlice"
-
+import { fetchAllPosts } from "./features/postSlice";
 
 function App() {
   const mode = useSelector((state) => state.theme.mode);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchUser())
-    dispatch(fetchAllPosts())
+    dispatch(fetchUser());
+    dispatch(fetchAllPosts());
     document.documentElement.classList.toggle("dark", mode === "dark");
   }, [mode]);
   return (
@@ -28,17 +27,23 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<SignIn />} />
-          <Route path="/home" element={
-            <ProjectedRoute>
-              <Home />
-            </ProjectedRoute>
-          } />
+          <Route
+            path="/home"
+            element={
+              <ProjectedRoute>
+                <Home />
+              </ProjectedRoute>
+            }
+          />
 
-          <Route path="/profile" element={
-            <ProjectedRoute>
-              <Profile />
-            </ProjectedRoute>
-          } />
+          <Route
+            path="/profile"
+            element={
+              <ProjectedRoute>
+                <Profile />
+              </ProjectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
 
@@ -55,7 +60,7 @@ function App() {
         theme="light"
       />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,4 +1,3 @@
-
 /*
 POST   /connections/request/:userId
 POST   /connections/accept/:requestId

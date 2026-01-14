@@ -4,9 +4,6 @@ import jwt from "jsonwebtoken";
 import { userLog } from "../constants.js";
 import { Admin } from "../models/admin.model.js";
 
-
-
-
 const signUp = async (req, res) => {
   try {
     const {
@@ -79,7 +76,6 @@ const signUp = async (req, res) => {
       message: "User created successfully",
       data: user,
     });
-
   } catch (error) {
     console.error("Signup Error:", error);
 
@@ -98,8 +94,6 @@ const signUp = async (req, res) => {
   }
 };
 
-
-
 const signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -108,7 +102,7 @@ const signIn = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email and Password are required"
+        message: "Email and Password are required",
       });
     }
 
@@ -117,7 +111,7 @@ const signIn = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -126,17 +120,15 @@ const signIn = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: "Incorrect password"
+        message: "Incorrect password",
       });
     }
-
-
 
     // 5. Generate JWT with role
     const token = jwt.sign(
       {
         id: user._id,
-        role: user.roleType
+        role: user.roleType,
       },
       process.env.JWT_SECRET,
       { expiresIn: process.env.EXPIRE_TOKEN }
@@ -149,35 +141,34 @@ const signIn = async (req, res) => {
     return res
       .cookie("accioConnect-token", token, {
         httpOnly: true,
-        secure: false,     // true in production with HTTPS
-        sameSite: "lax"
+        secure: false, // true in production with HTTPS
+        sameSite: "lax",
       })
       .status(200)
       .json({
         success: true,
         message: "Login successful",
-        data: loginUser
+        data: loginUser,
       });
-
   } catch (error) {
     console.error("SignIn Error:", error);
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error"
+      message: "Internal Server Error",
     });
   }
 };
 
 const loginAdmin = async (req, res) => {
   try {
-    const { email, password, adminSecretKey } = req.body
+    const { email, password, adminSecretKey } = req.body;
 
-    const admin = await Admin.findOne({ email })
+    const admin = await Admin.findOne({ email });
 
     if (!admin) {
       return res.status(404).json({
         success: false,
-        message: "Admin not found"
+        message: "Admin not found",
       });
     }
 
@@ -187,7 +178,7 @@ const loginAdmin = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: "Incorrect password"
+        message: "Incorrect password",
       });
     }
 
@@ -196,25 +187,26 @@ const loginAdmin = async (req, res) => {
       if (!adminSecretKey) {
         return res.status(403).json({
           success: false,
-          message: "Admin secret required"
+          message: "Admin secret required",
         });
       }
 
       if (adminSecretKey !== process.env.ADMIN_SECRET) {
         return res.status(403).json({
           success: false,
-          message: "Invalid admin secret"
+          message: "Invalid admin secret",
         });
       }
     }
 
-    const token = jwt.sign({
-      id: admin._id,
-      role: admin.roleType
-    },
+    const token = jwt.sign(
+      {
+        id: admin._id,
+        role: admin.roleType,
+      },
       process.env.JWT_SECRET,
       { expiresIn: process.env.EXPIRE_TOKEN }
-    )
+    );
 
     // 6. Remove password before sending user data
     const loginAdmin = await Admin.findById(admin._id).select("-password");
@@ -223,29 +215,22 @@ const loginAdmin = async (req, res) => {
     return res
       .cookie("accioConnect-token", token, {
         httpOnly: true,
-        secure: false,     // true in production with HTTPS
-        sameSite: "lax"
+        secure: false, // true in production with HTTPS
+        sameSite: "lax",
       })
       .status(200)
       .json({
         success: true,
         message: "Admin Login successful",
-        data: loginAdmin
+        data: loginAdmin,
       });
-
-
   } catch (error) {
     console.error("SignIn Error:", error);
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error"
+      message: "Internal Server Error",
     });
   }
-}
+};
 
-
-export {
-  signIn,
-  signUp,
-  loginAdmin
-}
+export { signIn, signUp, loginAdmin };

@@ -15,7 +15,7 @@ export const fetchUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await api.post("/user/profile");
-      console.log(res,"fetch user in create async thubk")
+      console.log(res, "fetch user in create async thubk");
       return res.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);

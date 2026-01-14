@@ -15,17 +15,18 @@ export default function CommentModal({ post, onClose }) {
     // Call api to update comments
 
     try {
-      const responseFromApi = await api.post(`/post/comment/${postId}`,{comment: text})
+      const responseFromApi = await api.post(`/post/comment/${postId}`, {
+        comment: text,
+      });
 
-      console.log(responseFromApi,"Response fdrom comment Api")
+      console.log(responseFromApi, "Response fdrom comment Api");
 
-       onClose()
-      
+      onClose();
     } catch (error) {
-      console.log(error, "Error in creating error")
+      console.log(error, "Error in creating error");
     }
 
-    // Take a reducer function from redux toolkit which will update the post 
+    // Take a reducer function from redux toolkit which will update the post
 
     // dispatch(
     //   createComment({
@@ -33,16 +34,12 @@ export default function CommentModal({ post, onClose }) {
     //     commentData: { comment : text }
     //   })
     // );
-
-   
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex justify-center items-start z-50" >
-
+    <div className="fixed inset-0 bg-black/70 flex justify-center items-start z-50">
       {/* Modal Box */}
       <div className="bg-black border border-gray-800 rounded-2xl w-full max-w-xl mt-10 p-4">
-
         {/* Close */}
         <div className="flex justify-between mb-4">
           <button onClick={onClose} className="text-gray-400 hover:text-white">
@@ -84,7 +81,7 @@ export default function CommentModal({ post, onClose }) {
         {/* Reply Button */}
         <div className="flex justify-end mt-4">
           <button
-            onClick={()=>handleSubmit(post._Id)}
+            onClick={() => handleSubmit(post._Id)}
             className="bg-blue-500 px-4 py-1.5 rounded-full font-semibold disabled:opacity-50"
             disabled={!text.trim()}
           >

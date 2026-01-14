@@ -6,121 +6,134 @@ import { PiStudentBold } from "react-icons/pi";
 import { FaChalkboardTeacher } from "react-icons/fa";
 
 export default function Profile() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const userData = useSelector((state) => state.user.currentUser)
-    console.log(userData, "User Data in profile")
-    const JoinedDate = userData?.createdAt
-        ? getJoinedDate(userData.createdAt)
-        : "";
+  const userData = useSelector((state) => state.user.currentUser);
+  console.log(userData, "User Data in profile");
+  const JoinedDate = userData?.createdAt
+    ? getJoinedDate(userData.createdAt)
+    : "";
 
+  return (
+    <div className="border-x border-gray-800 min-h-screen bg-black text-white">
+      {/* Header */}
+      <div className="flex items-center gap-4 px-4 py-3 sticky top-0 bg-black/80 backdrop-blur z-10 border-b border-gray-800">
+        {/* Home / Back */}
+        <button
+          onClick={() => navigate("/home")}
+          className="hover:bg-gray-900 p-2 rounded-full transition"
+        >
+          <FaArrowLeft size={20} />
+        </button>
 
+        <div>
+          <h2 className="font-bold text-lg leading-none">vivek jadhav</h2>
+          <p className="text-xs text-gray-400">4 posts</p>
+        </div>
+      </div>
 
+      {/* Cover */}
+      <div className="h-52 bg-linear-to-r from-gray-700 to-gray-800"></div>
 
-    return (
-        <div className="border-x border-gray-800 min-h-screen bg-black text-white">
+      {/* Profile Section */}
+      <div className="px-4 relative">
+        {/* Avatar */}
 
-            {/* Header */}
-            <div className="flex items-center gap-4 px-4 py-3 sticky top-0 bg-black/80 backdrop-blur z-10 border-b border-gray-800">
+        {userData?.profilePicture ? (
+          <img
+            src={userData?.profilePicture}
+            alt="profile"
+            className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
+          />
+        ) : (
+          <img
+            src="/avatar.png"
+            alt="profile"
+            className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
+          />
+        )}
+        <img
+          src="/avatar.png"
+          alt="profile"
+          className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
+        />
 
-                {/* Home / Back */}
-                <button
-                    onClick={() => navigate("/home")}
-                    className="hover:bg-gray-900 p-2 rounded-full transition"
-                >
-                    <FaArrowLeft size={20} />
-                </button>
+        {/* Edit Button */}
+        <div className="flex gap-2 justify-end mt-4">
+          <button className="border border-gray-600 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-gray-900 transition cursor-pointer">
+            Edit profile
+          </button>
+          {userData?.subscriptionPlan === "free" && (
+            <button className="border border-gray-600 px-4 py-1.5 rounded-full text-sm bg-amber-400 text-black  font-semibold hover:bg-amber-500 transition cursor-pointer">
+              Switch to Pro
+            </button>
+          )}
+        </div>
 
-                <div>
-                    <h2 className="font-bold text-lg leading-none">vivek jadhav</h2>
-                    <p className="text-xs text-gray-400">4 posts</p>
-                </div>
+        {/* Info */}
+        <div className="mt-14 space-y-3">
+          <div>
+            <h1 className="text-xl font-bold">{`${userData.fullName}`}</h1>
+            <div className=" flex gap-2 items-center mt-2">
+              <p className="text-gray-400 text-sm">{userData?.userName}</p> |
+              <p className="text-gray-400 text-sm">{userData?.email}</p>
             </div>
+          </div>
 
-            {/* Cover */}
-            <div className="h-52 bg-linear-to-r from-gray-700 to-gray-800"></div>
-
-            {/* Profile Section */}
-            <div className="px-4 relative">
-
-                {/* Avatar */}
-
-                {userData?.profilePicture ? (
-                    <img
-                        src={userData?.profilePicture}
-                        alt="profile"
-                        className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
-                    />
-
-                ) : (
-                    <img
-                        src="/avatar.png"
-                        alt="profile"
-                        className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
-                    />
-                )}
-                <img
-                    src="/avatar.png"
-                    alt="profile"
-                    className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
-                />
-
-                {/* Edit Button */}
-                <div className="flex gap-2 justify-end mt-4">
-                    <button className="border border-gray-600 px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-gray-900 transition cursor-pointer">
-                        Edit profile
-                    </button>
-                    {userData?.subscriptionPlan === "free" && <button className="border border-gray-600 px-4 py-1.5 rounded-full text-sm bg-amber-400 text-black  font-semibold hover:bg-amber-500 transition cursor-pointer">
-                        Switch to Pro
-                    </button>}
-                </div>
-
-                {/* Info */}
-                <div className="mt-14 space-y-3">
-                    <div>
-                        <h1 className="text-xl font-bold">{`${userData.fullName}`}</h1>
-                        <div className=" flex gap-2 items-center mt-2">
-                            <p className="text-gray-400 text-sm">{userData?.userName}</p> | 
-                            <p className="text-gray-400 text-sm">{userData?.email}</p>
-                        </div>
-                    </div>
-
-                    {/* <p className="text-sm leading-relaxed text-gray-200 max-w-md">
+          {/* <p className="text-sm leading-relaxed text-gray-200 max-w-md">
                         A Passionate & Self-taught Frontend developer from India.
                     </p> */}
 
-                    <div className="flex gap-4 text-gray-400 text-sm">
-                        <span>📍 {userData?.centerLocation}</span>
-                        <span>📅 Joined {JoinedDate}</span>
-                        {userData?.roleType === "student" ? <span className="flex gap-1.5 items-center justify-center"><PiStudentBold size={22} /> Student</span> : <span className="flex gap-1.5 items-center justify-center"><FaChalkboardTeacher size={22} /> Instructor</span>}
-                        <span>{userData?.courseType}</span>
-                    </div>
+          <div className="flex gap-4 text-gray-400 text-sm">
+            <span>📍 {userData?.centerLocation}</span>
+            <span>📅 Joined {JoinedDate}</span>
+            {userData?.roleType === "student" ? (
+              <span className="flex gap-1.5 items-center justify-center">
+                <PiStudentBold size={22} /> Student
+              </span>
+            ) : (
+              <span className="flex gap-1.5 items-center justify-center">
+                <FaChalkboardTeacher size={22} /> Instructor
+              </span>
+            )}
+            <span>{userData?.courseType}</span>
+          </div>
 
-                    <div className="flex gap-6 text-sm">
-                        <span><b className="text-white">193</b> <span className="text-gray-400">Connected</span></span>
-                        <span><b className="text-white">2</b> <span className="text-gray-400">Connections</span></span>
-                    </div>
-                </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex justify-between mt-6 border-b border-gray-800 text-sm">
-                {["Posts", "Replies", "Highlights", "Media", "Likes"].map((tab, i) => (
-                    <button
-                        key={tab}
-                        className={`py-3 w-full text-center hover:bg-gray-900 transition
-              ${i === 0 ? "border-b-2 border-blue-500 font-semibold" : "text-gray-400"}
-            `}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
-
-            {/* Posts */}
-            <div className="p-6 text-gray-500 text-sm text-center">
-                User posts will render here…
-            </div>
+          <div className="flex gap-6 text-sm">
+            <span>
+              <b className="text-white">193</b>{" "}
+              <span className="text-gray-400">Connected</span>
+            </span>
+            <span>
+              <b className="text-white">2</b>{" "}
+              <span className="text-gray-400">Connections</span>
+            </span>
+          </div>
         </div>
-    );
+      </div>
+
+      {/* Tabs */}
+      <div className="flex justify-between mt-6 border-b border-gray-800 text-sm">
+        {["Posts", "Replies", "Highlights", "Media", "Likes"].map((tab, i) => (
+          <button
+            key={tab}
+            className={`py-3 w-full text-center hover:bg-gray-900 transition
+              ${
+                i === 0
+                  ? "border-b-2 border-blue-500 font-semibold"
+                  : "text-gray-400"
+              }
+            `}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {/* Posts */}
+      <div className="p-6 text-gray-500 text-sm text-center">
+        User posts will render here…
+      </div>
+    </div>
+  );
 }
