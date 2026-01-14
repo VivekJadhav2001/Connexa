@@ -8,7 +8,6 @@ export const client = new S3Client({
     }
 })
 
-
 async function uploadFileToS3(fileBuffer, fileName, mimeType) {
 
     // Basic validations
