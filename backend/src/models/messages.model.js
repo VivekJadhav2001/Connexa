@@ -12,6 +12,12 @@ const messageSchema = new mongoose.Schema({
 
   content: { type: String, required: true },
 
+  // Create a reference to Conversation model later
+  // conversationId: { 
+  //   type: mongoose.Schema.Types.ObjectId, required: true, ref: "Conversation"
+  // },
+  isRead: { type: Boolean, default: false },
+
 }, { timestamps: true });
 
 export const Message = mongoose.model("Message", messageSchema);

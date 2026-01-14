@@ -78,8 +78,11 @@ export default function Profile() {
                 {/* Info */}
                 <div className="mt-14 space-y-3">
                     <div>
-                        <h1 className="text-xl font-bold">{`${userData?.firstName} ${userData?.lastName}`}</h1>
-                        <p className="text-gray-400 text-sm">{userData?.email}</p>
+                        <h1 className="text-xl font-bold">{`${userData.fullName}`}</h1>
+                        <div className=" flex gap-2 items-center mt-2">
+                            <p className="text-gray-400 text-sm">{userData?.userName}</p> | 
+                            <p className="text-gray-400 text-sm">{userData?.email}</p>
+                        </div>
                     </div>
 
                     {/* <p className="text-sm leading-relaxed text-gray-200 max-w-md">

@@ -13,7 +13,7 @@ const activitySchema = new mongoose.Schema({
     },
     actionType:{
         type:String,
-        enum:["login","logout","createPost","deletePost","likePost","commented","chatSend","videoCall","connect","profileUpdate"]
+        enum:["login","logout","createPost","deletePost","likePost","commented","chatSend","videoCall","connect","profileUpdate","jobApply","deleteAccount"],
     },
 
     ipAddress: {

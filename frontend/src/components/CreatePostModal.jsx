@@ -75,7 +75,7 @@ export default function CreatePostModal({ isOpen, onClose }) {
         if (postCategory === "referral") {
             formData.append("referralDetails", JSON.stringify(referralDetails));
         }
-
+        
         mediaFiles.forEach((media) => formData.append("media", media.file));
 
         // try {
@@ -109,6 +109,22 @@ export default function CreatePostModal({ isOpen, onClose }) {
         setPostCategory("general");
         setReferralDetails({ company: "", jobRole: "", applyLink: "" });
 
+        console.log([...formData.entries()],"Form Data Submitted");
+
+        try {
+            await api.post("/post/createPost", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            onClose();
+            setContent("");
+            setCaption("");
+            setMediaFiles([]);
+            setPostCategory("general");
+            setReferralDetails({ company: "", jobRole: "", applyLink: "" });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
 

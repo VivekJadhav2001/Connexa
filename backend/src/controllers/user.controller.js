@@ -34,7 +34,7 @@ const profile = async (req, res, next) => {
 };
 
 /*
-Update profile
+Update/Edit profile
 
 Apply for verification
 
