@@ -26,7 +26,7 @@ export default function CreatePostModal({ isOpen, onClose }) {
   const [content, setContent] = useState("");
   const [caption, setCaption] = useState("");
   const [visibility, setVisibility] = useState("public");
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const [referralDetails, setReferralDetails] = useState({
     company: "",
@@ -63,65 +63,50 @@ export default function CreatePostModal({ isOpen, onClose }) {
   };
 
   async function uploadPost() {
-    try {
-      setLoading(true)
-      const payload = {
-        files: mediaFiles.map((m) => ({
-          fileName: m.file.name,
-          fileType: m.file.type, 
-        })),
-      };
+  try {
+    setLoading(true);
 
-      console.log(payload, "Payload");
+    const payload = {
+      files: mediaFiles.map((m) => ({
+        fileName: m.file.name,
+        fileType: m.file.type,
+      })),
+    };
 
-      // mediaFiles.forEach((media)=>{
-      //   console.log(media, "media.file ")
-      // })
+    const res = await api.post("/post/uploadFile", payload);
 
-      const res = await api.post("/post/uploadFile", payload);
+    const urls = res.data.urls;
+    // urls now contain:
+    // { uploadUrl, publicUrl, key }
 
-      console.log(res, "Response from upload API");
-
-      const urls = res.data.urls; //array of object fileName anfd url/key/path
-
-      //uploading files to S# bucket
-      if (urls.length > 1) {
-        for (let i = 0; i < urls.length; i++) {
-          const uploaded = await axios.put(
-            urls[i].uploadUrl,
-            mediaFiles[i].file,
-            {
-              headers: {
-                "Content-Type": mediaFiles[i].file.type,
-              },
-            },
-          );
-
-          console.log(uploaded, "Uploaded multiple files to S3 bucket");
-        }
-      } else {
-        const uploaded = await axios.put(urls[0].uploadUrl, mediaFiles[0].file);
-
-        console.log(uploaded, "Uploaded one file to S3 bucket");
-      }
-
-      //Save the Url-S3 in backend
-      const createPost = await api.post("/post/createPost", {
-        postCategory: "general", // or from UI
-        contentType:
-          urls.length > 1 ? "carousel" : mediaFiles[0].file.type.split("/")[0],
-        content: urls.map((u) => u.key), // store S3 keys OR uploadUrl.split("?")[0]
-        caption: caption,
-        visibility: "public",
+    // Upload each file to S3
+    for (let i = 0; i < urls.length; i++) {
+      await axios.put(urls[i].uploadUrl, mediaFiles[i].file, {
+        headers: {
+          "Content-Type": mediaFiles[i].file.type,
+          "Content-Disposition": "inline",
+        },
       });
-
-      console.log(createPost, "Response from Create Post URL");
-    } catch (error) {
-      console.log("Upload error:", error);
     }
 
-    setLoading(false)
+    const createPost = await api.post("/post/createPost", {
+      postCategory: "general",
+      contentType:
+        urls.length > 1 ? "carousel" : mediaFiles[0].file.type.split("/")[0],
+      content: urls.map((u) => u.publicUrl),
+      caption: caption,
+      visibility: "public",
+    });
+
+    console.log(createPost, "Post created");
+
+  } catch (error) {
+    console.log("Upload error:", error);
   }
+
+  setLoading(false);
+}
+
 
   return (
     <div className="fixed inset-0 bg-black/70 flex justify-center items-start z-50">
@@ -270,7 +255,7 @@ export default function CreatePostModal({ isOpen, onClose }) {
               }`}
           onClick={uploadPost}
         >
-          {loading ?"Uploading ...." : "Upload"}
+          {loading ? "Uploading ...." : "Upload"}
         </button>
       </div>
     </div>
