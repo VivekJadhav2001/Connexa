@@ -35,7 +35,7 @@ const postSchema = new mongoose.Schema(
       required: true,
     },
 
-    content: { type: String, required: true },
+    content: [{ type: String, required: true }],
     caption: { type: String },
 
     referralDetails: {

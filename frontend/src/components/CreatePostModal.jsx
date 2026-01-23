@@ -3,6 +3,7 @@ import { IoClose } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import api from "../utils/api";
 import { createPost } from "../features/postSlice";
+import axios from "axios";
 
 /* Image Icon */
 const ImageIcon = (props) => (
@@ -25,6 +26,7 @@ export default function CreatePostModal({ isOpen, onClose }) {
   const [content, setContent] = useState("");
   const [caption, setCaption] = useState("");
   const [visibility, setVisibility] = useState("public");
+  const [loading,setLoading] = useState(false)
 
   const [referralDetails, setReferralDetails] = useState({
     company: "",
@@ -42,7 +44,8 @@ export default function CreatePostModal({ isOpen, onClose }) {
     const files = Array.from(e.target.files);
 
     const validFiles = files.filter(
-      (file) => file.type.startsWith("image/") || file.type.startsWith("video/")
+      (file) =>
+        file.type.startsWith("image/") || file.type.startsWith("video/"),
     );
 
     const mapped = validFiles.map((file) => ({
@@ -59,76 +62,65 @@ export default function CreatePostModal({ isOpen, onClose }) {
     setMediaFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  async function handleSubmit() {
-    if (!content.trim() && mediaFiles.length === 0) return;
-
-    const contentType =
-      mediaFiles.length === 0
-        ? "text"
-        : mediaFiles.length === 1
-        ? mediaFiles[0].type // "image" or "video"
-        : "image"; // gallery
-
-    const formData = new FormData();
-    formData.append("postCategory", postCategory);
-    formData.append("contentType", contentType);
-    formData.append("content", content);
-    formData.append("caption", caption);
-    formData.append("visibility", visibility);
-
-    if (postCategory === "referral") {
-      formData.append("referralDetails", JSON.stringify(referralDetails));
-    }
-
-    mediaFiles.forEach((media) => formData.append("media", media.file));
-
-    // try {
-    //     await api.post("/post/createPost", formData, {
-    //         headers: { "Content-Type": "multipart/form-data" },
-    //     });
-    //     onClose();
-    //     setContent("");
-    //     setCaption("");
-    //     setMediaFiles([]);
-    //     setPostCategory("general");
-    //     setReferralDetails({ company: "", jobRole: "", applyLink: "" });
-    // } catch (error) {
-    //     console.error(error);
-    // }
-    dispatch(
-      createPost({
-        postCategory,
-        contentType,
-        content,
-        caption,
-        visibility,
-        referralDetails,
-      })
-    );
-
-    onClose();
-    setContent("");
-    setCaption("");
-    setMediaFiles([]);
-    setPostCategory("general");
-    setReferralDetails({ company: "", jobRole: "", applyLink: "" });
-
-    console.log([...formData.entries()], "Form Data Submitted");
-
+  async function uploadPost() {
     try {
-      await api.post("/post/createPost", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      setLoading(true)
+      const payload = {
+        files: mediaFiles.map((m) => ({
+          fileName: m.file.name,
+          fileType: m.file.type, 
+        })),
+      };
+
+      console.log(payload, "Payload");
+
+      // mediaFiles.forEach((media)=>{
+      //   console.log(media, "media.file ")
+      // })
+
+      const res = await api.post("/post/uploadFile", payload);
+
+      console.log(res, "Response from upload API");
+
+      const urls = res.data.urls; //array of object fileName anfd url/key/path
+
+      //uploading files to S# bucket
+      if (urls.length > 1) {
+        for (let i = 0; i < urls.length; i++) {
+          const uploaded = await axios.put(
+            urls[i].uploadUrl,
+            mediaFiles[i].file,
+            {
+              headers: {
+                "Content-Type": mediaFiles[i].file.type,
+              },
+            },
+          );
+
+          console.log(uploaded, "Uploaded multiple files to S3 bucket");
+        }
+      } else {
+        const uploaded = await axios.put(urls[0].uploadUrl, mediaFiles[0].file);
+
+        console.log(uploaded, "Uploaded one file to S3 bucket");
+      }
+
+      //Save the Url-S3 in backend
+      const createPost = await api.post("/post/createPost", {
+        postCategory: "general", // or from UI
+        contentType:
+          urls.length > 1 ? "carousel" : mediaFiles[0].file.type.split("/")[0],
+        content: urls.map((u) => u.key), // store S3 keys OR uploadUrl.split("?")[0]
+        caption: caption,
+        visibility: "public",
       });
 
-      onClose();
-      setContent("");
-      setCaption("");
-      setMediaFiles([]);
-      setPostCategory("general");
-      setReferralDetails({ company: "", jobRole: "", applyLink: "" });
+      console.log(createPost, "Response from Create Post URL");
     } catch (error) {
-      console.error(error);
+      console.log("Upload error:", error);
     }
+
+    setLoading(false)
   }
 
   return (
@@ -276,9 +268,9 @@ export default function CreatePostModal({ isOpen, onClose }) {
                   ? "bg-blue-500/40 cursor-not-allowed"
                   : "bg-blue-500 hover:bg-blue-600"
               }`}
-          onClick={handleSubmit}
+          onClick={uploadPost}
         >
-          Post
+          {loading ?"Uploading ...." : "Upload"}
         </button>
       </div>
     </div>

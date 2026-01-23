@@ -11,6 +11,7 @@ import {
   deleteComment,
   editComment,
   getAllCommentsByPost,
+  uploadFile,
 } from "../controllers/post.controller.js";
 import { authorization } from "../middlewares/authorization.js";
 
@@ -31,5 +32,7 @@ router.get(
   authorization,
   getAllCommentsByPost
 );
+
+router.post("/uploadFile",authorization,uploadFile)
 
 export default router;

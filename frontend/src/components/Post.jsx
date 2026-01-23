@@ -48,10 +48,11 @@ function Post({ post }) {
                 </span>
               ) : (
                 word
-              )
+              ),
             )}
           </p>
 
+          {/* Image */}
           {/* Image */}
           {post.contentType === "image" && (
             <div className="mt-3 rounded-xl overflow-hidden border border-gray-800">
@@ -63,12 +64,29 @@ function Post({ post }) {
             </div>
           )}
 
+          {/* Video */}
           {post.contentType === "video" && (
             <video
               src={post.content}
               controls
               className="w-full rounded-xl max-h-[500px]"
             />
+          )}
+
+          {/* Carousel */}
+          {post.contentType === "carousel" && (
+            <div className="mt-3 rounded-xl overflow-hidden border border-gray-800">
+              <div className="flex overflow-x-auto scroll-smooth no-scrollbar">
+                {post.content.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt={`post-${index}`}
+                    className="w-full object-cover max-h-[500px] shrink-0"
+                  />
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>

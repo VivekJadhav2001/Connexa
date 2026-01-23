@@ -2,8 +2,12 @@ import { TYPE_OF_POST } from "../constants.js";
 import { Post } from "../models/post.model.js";
 import { Like } from "../models/likes.model.js";
 import { Comment } from "../models/comments.model.js";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { client } from "../services/S3_Buckets.js";
 
 const createPost = async (req, res) => {
+  console.log(req.body)
   try {
     const {
       postCategory,
@@ -20,6 +24,7 @@ const createPost = async (req, res) => {
         ? JSON.parse(referralDetails)
         : undefined;
 
+        console.log(postCategory,contentType ,content, "Fields from frontend")
     if (!postCategory || !contentType || !content) {
       return res
         .status(400)
@@ -47,6 +52,81 @@ const createPost = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
+const uploadFile = async (req, res) => {
+  console.log(req.body, "upload File API");
+
+  try {
+    const { files } = req.body; //array of objects [{fileName:"",fileType}]
+
+    if (!files || !files.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Files array is required"
+      });
+    }
+
+    // Allowed types image ort video
+    const allowedTypes = ["image", "video"];
+
+    const uploadResponses = [];
+
+    for (const file of files) {
+      const { fileName, fileType } = file;
+
+      if (!fileName || !fileType) {
+        return res.status(400).json({
+          success: false,
+          message: "File name or file type missing"
+        });
+      }
+
+      // Validate image / video only
+      if (!allowedTypes.includes(fileType.split("/")[0])) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid file type: ${fileType}`
+        });
+      }
+
+      // Create unique key
+      const key = `uploads/${Date.now()}-${fileName}`;
+
+      // S3 PutObject command
+      const command = new PutObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: key,
+        ContentType: fileType,
+      });
+
+      console.log(process.env.AWS_BUCKET_NAME,client, "CREDENTIALS")
+
+      // Generate presigned URL
+      const uploadUrl = await getSignedUrl(client, command, {
+        expiresIn: 120
+      });
+
+      uploadResponses.push({
+        fileName,
+        key,
+        uploadUrl
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      urls: uploadResponses
+    });
+
+  } catch (error) {
+    console.log("Error while creating signed URLs:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server error"
+    });
+  }
+};
+
 
 const getMyPosts = async (req, res) => {
   try {
@@ -364,4 +444,5 @@ export {
   deleteComment,
   editComment,
   getAllCommentsByPost,
+  uploadFile,
 };

@@ -4,6 +4,10 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 
+import dotenv from "dotenv"
+
+dotenv.config()
+
 export const client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -11,7 +15,6 @@ export const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
-
 async function uploadFileToS3(fileBuffer, fileName, mimeType) {
   // Basic validations
   if (!fileBuffer || !fileName || !mimeType) {
@@ -20,7 +23,7 @@ async function uploadFileToS3(fileBuffer, fileName, mimeType) {
     throw error;
   }
 
-  // Sanitize filename
+  // Clear filename
   const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
   const KEY = `uploads/${Date.now()}-${safeName}`;
 
