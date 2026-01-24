@@ -11,10 +11,12 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { deletePost } from "../features/postSlice";
+import { deletePost } from "../features/postSlice.js";
+import api from "../utils/api.js";
 
 export default function PostMenu({ postDetails }) {
   const [open, setOpen] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
   const menuRef = useRef();
 
   const currentUserId = useSelector((state) => state.user.currentUser._id);
@@ -25,6 +27,22 @@ export default function PostMenu({ postDetails }) {
   function deletePostById(postId) {
     dispatch(deletePost(postId));
     setOpen(false);
+  }
+
+
+  async function sendConnectionRequest() {
+    try {
+      setFollowLoading(true);
+
+      await api.post(`/user/connect/${postDetails.author._id}`);
+
+      console.log("Connection request sent");
+      setOpen(false);
+    } catch (error) {
+      console.error("Error sending connection request:", error.response?.data || error);
+    } finally {
+      setFollowLoading(false);
+    }
   }
 
   // Close menu on outside click
@@ -39,7 +57,7 @@ export default function PostMenu({ postDetails }) {
   }, []);
 
   return (
-    <div className="relative " ref={menuRef}>
+    <div className="relative" ref={menuRef}>
       {/* Three Dots Button */}
       <button
         onClick={() => setOpen(!open)}
@@ -60,11 +78,15 @@ export default function PostMenu({ postDetails }) {
             </>
           ) : (
             <>
-              <MenuItem
-                icon={<FaRegSadTear />}
-                text="Not interested in this post"
-              />
-              <MenuItem icon={<FaUserPlus />} text="Follow user" />
+              <MenuItem icon={<FaRegSadTear />} text="Not interested in this post" />
+
+              <button onClick={sendConnectionRequest} disabled={followLoading}>
+                <MenuItem
+                  icon={<FaUserPlus />}
+                  text={followLoading ? "Sending..." : "Follow user"}
+                />
+              </button>
+
               <MenuItem icon={<FaLink />} text="Add/remove from Lists" />
               <MenuItem icon={<FaVolumeMute />} text="Mute user" />
               <MenuItem icon={<FaBan />} text="Block user" />
