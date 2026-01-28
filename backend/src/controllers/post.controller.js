@@ -39,7 +39,7 @@ const createPost = async (req, res) => {
       caption,
       referralDetails: parsedReferral,
       visibility,
-      media: req.files, // array of uploaded files
+      media: req.files || [], // array of uploaded files
     });
 
     res.status(201).json({

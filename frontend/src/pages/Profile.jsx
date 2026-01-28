@@ -1,19 +1,36 @@
+import { useEffect } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getJoinedDate } from "../constants";
 import { PiStudentBold } from "react-icons/pi";
 import { FaChalkboardTeacher } from "react-icons/fa";
+import api from "../utils/api";
+import { useState } from "react";
 
 export default function Profile() {
   const navigate = useNavigate();
   const getAllPosts = useSelector((state) => state.posts.posts);
   console.log(getAllPosts);
+
+  const [userPosts, setUserPosts] = useState([])
   const userData = useSelector((state) => state.user.currentUser);
   // console.log(userData, "User Data in profile");
   const JoinedDate = userData?.createdAt
     ? getJoinedDate(userData.createdAt)
     : "";
+
+
+  async function fetchUserPosts() {
+    // Fetch posts logic here
+    const res = await api.get("/post/my-posts")
+    setUserPosts(res.data.data)
+    // console.log(res.data.data,"MY POSTS")
+  }
+  
+  useEffect(()=>{
+    fetchUserPosts()
+  },[])
 
   return (
     <div className="border-x border-gray-800 min-h-screen bg-black text-white">
@@ -137,9 +154,9 @@ export default function Profile() {
       {/* Posts */}
       <div className="p-6 text-gray-500 text-sm">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {getAllPosts.map((post) => (
+          {userPosts?.map((post) => (
             <div
-              key={post.id}
+              key={post._id}
               className="bg-gray-900 rounded-lg overflow-hidden border border-gray-600"
             >
               <div className="flex items-center p-2">
