@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import { User } from "../models/user.model";
 
 const getAllUserLogs = async (req, res) => {
   console.log(req, "Request in admin controller");
@@ -18,7 +19,60 @@ const getAllUserLogs = async (req, res) => {
   }
 };
 
-export { getAllUserLogs };
+const getAllUsers = async (req, res) => {
+  try {
+    const allUsers = (await User.find({})) / select("-password");
+
+    if (!allUsers.length) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No Users Avaliable For Now" });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "All Users", data: allUsers });
+  } catch (error) {
+    console.log(error, "Admin Fetch All users api");
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+const getUserById = async (req, res) => {
+  try {
+    // User id that admin wants to search
+    const userId = req.params.userId;
+
+    if (!userId) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User ID Is Required" });
+    }
+
+    const userData = await User.findById(userId).select("-password");
+
+    if (!userData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User Not Found" });
+    }
+
+    return res
+      .status(200)
+      .json({ success: false, message: "User Data", data: userData });
+
+
+  } catch (error) {
+    console.log(error, "Get All User By Id Error");
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export { getAllUserLogs, getAllUsers,getUserById };
 
 /*
 Day 0 : Build Basic Frontend for Posts and its CRUD ops, Profile Edits , make a pinned Post for admin, and also create another user profile for me(user) for sending connection requests, Make dummy data of 50 Students and build UI of admin dashboards and main app

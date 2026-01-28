@@ -153,7 +153,14 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
 
-    sessions:[sessionSchema]
+    sessions:[sessionSchema],
+
+    passwordResetToken:{
+      type:String
+    },
+    passwordResetExpires:{
+      type:String
+    }
   },
   { timestamps: true },
 );
