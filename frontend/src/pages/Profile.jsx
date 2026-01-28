@@ -7,9 +7,10 @@ import { FaChalkboardTeacher } from "react-icons/fa";
 
 export default function Profile() {
   const navigate = useNavigate();
-
+  const getAllPosts = useSelector((state) => state.posts.posts);
+  console.log(getAllPosts);
   const userData = useSelector((state) => state.user.currentUser);
-  console.log(userData, "User Data in profile");
+  // console.log(userData, "User Data in profile");
   const JoinedDate = userData?.createdAt
     ? getJoinedDate(userData.createdAt)
     : "";
@@ -27,13 +28,17 @@ export default function Profile() {
         </button>
 
         <div>
-          <h2 className="font-bold text-lg leading-none">vivek jadhav</h2>
+          <h2 className="font-bold text-lg leading-none">
+            {userData?.fullName}
+          </h2>
           <p className="text-xs text-gray-400">4 posts</p>
         </div>
       </div>
 
       {/* Cover */}
-      <div className="h-52 bg-linear-to-r from-gray-700 to-gray-800"></div>
+      <div className="h-52 bg-linear-to-r from-gray-700 to-gray-800">
+        <img className="h-full" src="https://njvawavweamzvvakmsgn.supabase.co/storage/v1/object/public/accioconnect/Blue%20White%20Aesthetic%20Welcome%20to%20My%20Profile%20Twitter%20Header.png" alt="sai" />
+      </div>
 
       {/* Profile Section */}
       <div className="px-4 relative">
@@ -73,7 +78,7 @@ export default function Profile() {
         {/* Info */}
         <div className="mt-14 space-y-3">
           <div>
-            <h1 className="text-xl font-bold">{`${userData.fullName}`}</h1>
+            <h1 className="text-xl font-bold">{userData?.fullName}</h1>
             <div className=" flex gap-2 items-center mt-2">
               <p className="text-gray-400 text-sm">{userData?.userName}</p> |
               <p className="text-gray-400 text-sm">{userData?.email}</p>
@@ -118,10 +123,9 @@ export default function Profile() {
           <button
             key={tab}
             className={`py-3 w-full text-center hover:bg-gray-900 transition
-              ${
-                i === 0
-                  ? "border-b-2 border-blue-500 font-semibold"
-                  : "text-gray-400"
+              ${i === 0
+                ? "border-b-2 border-blue-500 font-semibold"
+                : "text-gray-400"
               }
             `}
           >
@@ -131,8 +135,32 @@ export default function Profile() {
       </div>
 
       {/* Posts */}
-      <div className="p-6 text-gray-500 text-sm text-center">
-        User posts will render here…
+      <div className="p-6 text-gray-500 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {getAllPosts.map((post) => (
+            <div
+              key={post.id}
+              className="bg-gray-900 rounded-lg overflow-hidden border border-gray-600"
+            >
+              <div className="flex items-center p-2">
+                <img
+                  src={post.author.profilePicture}
+                  alt={post.author.firstName}
+                  className="w-8 h-8 rounded-full mr-2"
+                />
+                <span className="text-white font-semibold">
+                  {post.author.firstName}
+                </span>
+              </div>
+
+              <img
+                src={post.content}
+                alt={post.caption}
+                className="w-full h-120 object-cover"
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

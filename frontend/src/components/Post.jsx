@@ -26,10 +26,10 @@ function Post({ post }) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-white">
-                {post.author.firstName + " " + post.author.lastName}
+                {post?.author?.firstName + " " + post?.author?.lastName}
               </span>
               <span className="text-gray-500 text-sm">
-                · {timeAgo(post.createdAt)}
+                · {timeAgo(post?.createdAt)}
               </span>
             </div>
 

@@ -19,7 +19,7 @@ function App() {
     dispatch(fetchUser());
     dispatch(fetchAllPosts());
     document.documentElement.classList.toggle("dark", mode === "dark");
-  }, [mode]);
+  }, [mode, dispatch]);
   return (
     <div className="bg-gray-900 h-screen">
       <BrowserRouter>

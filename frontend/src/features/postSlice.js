@@ -21,11 +21,12 @@ export const fetchAllPosts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await api.get("/post/allPosts");
+      console.log(res.data.data);
       return res.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 // Fetch logged-in user's posts
@@ -38,7 +39,7 @@ export const fetchMyPosts = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 // Create new post
@@ -51,7 +52,7 @@ export const createPost = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 // Update existing post
@@ -64,7 +65,7 @@ export const updatePost = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 // Delete post
@@ -77,7 +78,7 @@ export const deletePost = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 //getReferal posts
@@ -90,7 +91,7 @@ export const fetchReferalPosts = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 //create Comment for posts
@@ -104,7 +105,7 @@ export const createComment = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 /* ======================================================
    SLICE
@@ -161,7 +162,7 @@ const postSlice = createSlice({
     // Set posts list (feed or my posts)
     builder
       .addCase(fetchAllPosts.fulfilled, (state, action) => {
-        console.log("fetch post fulfilled", fetchAllPosts.fulfilled);
+        // console.log("fetch post fulfilled", fetchAllPosts.fulfilled);
         state.loading = false;
         state.posts = action.payload;
       })
@@ -176,7 +177,6 @@ const postSlice = createSlice({
       // Add newly created post to top
       .addCase(createPost.fulfilled, (state, action) => {
         console.log("create post ", createPost.fulfilled);
-
         state.loading = false;
         state.posts.unshift(action.payload);
       })
@@ -187,7 +187,7 @@ const postSlice = createSlice({
 
         state.loading = false;
         const index = state.posts.findIndex(
-          (post) => post._id === action.payload._id
+          (post) => post._id === action.payload._id,
         );
         if (index !== -1) {
           state.posts[index] = action.payload;
@@ -206,7 +206,7 @@ const postSlice = createSlice({
       .addCase(fetchReferalPosts.fulfilled, (state, action) => {
         console.log(
           "fetch referals post post fulfilled",
-          fetchReferalPosts.fulfilled
+          fetchReferalPosts.fulfilled,
         );
 
         state.loading = false;
@@ -234,7 +234,7 @@ const postSlice = createSlice({
     /* ---------- COMMON LOADING & ERROR HANDLING ---------- */
     builder
       .addMatcher(isPending(...postThunks), (state) => {
-        console.log("match maker");
+        // console.log("match maker");
         state.loading = true;
         state.error = null;
       })

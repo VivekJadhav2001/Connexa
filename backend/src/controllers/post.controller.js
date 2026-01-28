@@ -100,14 +100,13 @@ const uploadFile = async (req, res) => {
         expiresIn: 120,
       });
 
-
       const publicUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
       uploadResponses.push({
         fileName,
         key,
-        uploadUrl,   // for PUT
-        publicUrl,   // for DB storage
+        uploadUrl, // for PUT
+        publicUrl, // for DB storage
       });
     }
 
@@ -115,7 +114,6 @@ const uploadFile = async (req, res) => {
       success: true,
       urls: uploadResponses,
     });
-
   } catch (error) {
     console.log("Error while creating signed URLs:", error.message);
     return res.status(500).json({
@@ -124,7 +122,6 @@ const uploadFile = async (req, res) => {
     });
   }
 };
-
 
 const getMyPosts = async (req, res) => {
   try {

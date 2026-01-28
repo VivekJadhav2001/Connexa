@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import api from "../utils/api";
 import { createPost } from "../features/postSlice";
 import axios from "axios";
@@ -63,49 +63,66 @@ export default function CreatePostModal({ isOpen, onClose }) {
   };
 
   async function uploadPost() {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const payload = {
-      files: mediaFiles.map((m) => ({
-        fileName: m.file.name,
-        fileType: m.file.type,
-      })),
-    };
+      let urls = []; // default empty
 
-    const res = await api.post("/post/uploadFile", payload);
+      // Only call upload API if media exists
+      if (mediaFiles.length > 0) {
+        const payload = {
+          files: mediaFiles.map((m) => ({
+            fileName: m.file.name,
+            fileType: m.file.type,
+          })),
+        };
 
-    const urls = res.data.urls;
-    // urls now contain:
-    // { uploadUrl, publicUrl, key }
+        const res = await api.post("/post/uploadFile", payload);
+        urls = res.data.urls;
 
-    // Upload each file to S3
-    for (let i = 0; i < urls.length; i++) {
-      await axios.put(urls[i].uploadUrl, mediaFiles[i].file, {
-        headers: {
-          "Content-Type": mediaFiles[i].file.type,
-          "Content-Disposition": "inline",
-        },
-      });
+        // Upload each file to S3
+        for (let i = 0; i < urls.length; i++) {
+          await axios.put(urls[i].uploadUrl, mediaFiles[i].file, {
+            headers: {
+              "Content-Type": mediaFiles[i].file.type,
+              "Content-Disposition": "inline",
+            },
+          });
+        }
+      }
+
+      // Now always create post
+      dispatch(
+        createPost({
+          postCategory,
+          contentType:
+            urls.length > 1
+              ? "carousel"
+              : urls.length === 1
+                ? mediaFiles[0].file.type.split("/")[0]
+                : "text", // no media = text post
+          content: urls.length > 0 ? urls.map((u) => u.publicUrl) : [content], // ✅ text content fallback
+          caption: caption,
+          visibility: visibility,
+          referralDetails:
+            postCategory === "referral"
+              ? JSON.stringify(referralDetails)
+              : undefined,
+        })
+      );
+
+      onClose();
+      setMediaFiles([]);
+      setCaption("");
+      setContent("");
+
+      onClose();
+    } catch (error) {
+      console.log("Upload error:", error);
     }
 
-    const createPost = await api.post("/post/createPost", {
-      postCategory: "general",
-      contentType:
-        urls.length > 1 ? "carousel" : mediaFiles[0].file.type.split("/")[0],
-      content: urls.map((u) => u.publicUrl),
-      caption: caption,
-      visibility: "public",
-    });
-
-    console.log(createPost, "Post created");
-
-  } catch (error) {
-    console.log("Upload error:", error);
+    setLoading(false);
   }
-
-  setLoading(false);
-}
 
 
   return (
@@ -248,11 +265,10 @@ export default function CreatePostModal({ isOpen, onClose }) {
 
         <button
           className={`px-6 py-2 rounded-full font-semibold  transition
-              ${
-                content.trim().length === 0 && mediaFiles.length === 0
-                  ? "bg-blue-500/40 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
-              }`}
+              ${content.trim().length === 0 && mediaFiles.length === 0
+              ? "bg-blue-500/40 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
+            }`}
           onClick={uploadPost}
         >
           {loading ? "Uploading ...." : "Upload"}
