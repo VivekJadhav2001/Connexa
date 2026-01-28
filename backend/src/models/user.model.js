@@ -145,7 +145,8 @@ const userSchema = new mongoose.Schema(
       paidCallsUsed: { type: Number, default: 0 },
     },
 
-    lastSeen: { type: Date },
+    lastLogin: { type: Date },
+    lastLogout: { type: Date },
 
     //Admin
     adminSecretKey: {

@@ -91,7 +91,7 @@ Admin API
 //backend Api
 => Kept session Schema create a api which sends login logout and device info
 => according to the last login of user show GMap location of user 
-=> APi for getting top viewed post 
+=> APi for getting top Liked post 
 
 //mapcn.dev component to show user location to admin
 

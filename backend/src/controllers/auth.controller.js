@@ -134,6 +134,16 @@ const signIn = async (req, res) => {
       { expiresIn: process.env.EXPIRE_TOKEN }
     );
 
+    //Create Sessions
+    user.lastLogin = Date.now()
+    const session = {
+      login:Date.now(),
+      device: req.headers["user-agent"] || "Unknown Device"
+    }
+
+    user.sessions.push(session)
+    await user.save()
+
     // 6. Remove password before sending user data
     const loginUser = await User.findById(user._id).select("-password");
 
@@ -158,6 +168,41 @@ const signIn = async (req, res) => {
     });
   }
 };
+
+
+//Logout
+
+const logout = async (req,res)=>{
+  try {
+    const userId = req.userDecoded.id;
+
+    if(userId){
+      const user = await User.findById(userId)
+
+      const lastSession = user.sessions[user.sessions-1]
+
+      if(lastSession && !lastSession.logout){
+        lastSession.logout = Date.now()
+      }
+
+      user.lastLogout = Date.now()
+
+      await user.save()
+      
+    }
+    req.clearCookie("accioConnect-token",{
+      httpOnly:true,
+      secure:false,
+      sameSite:"lax"
+    })
+  } catch (error) {
+    console.error("Logout Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+}
 
 const loginAdmin = async (req, res) => {
   try {
@@ -233,4 +278,4 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-export { signIn, signUp, loginAdmin };
+export { signIn, signUp, logout,loginAdmin };

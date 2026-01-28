@@ -423,9 +423,34 @@ const getAllCommentsByPost = async (req, res) => {
   }
 };
 
+
+const mostLikedPost = async (req,res)=>{
+  try {
+    const posts = await Post.find({})
+    if(!posts.length){
+      return res.status(404).json({success:false, message:"No Posts Avaliable For Now"})
+    }
+    posts.sort((a,b)=> b.likes.length - a.likes.length)
+
+    const mostLikedPostOnConnexa = posts[0]
+
+    return res.status(200).json({success:false, message:"Most Liked Post on Connexa", data:mostLikedPostOnConnexa})
+
+
+  } catch (error) {
+    console.error("get most Viewed Post Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+}
+
 /*
 Reply to a comment
 */
+
+
 
 export {
   createPost,
@@ -440,4 +465,5 @@ export {
   editComment,
   getAllCommentsByPost,
   uploadFile,
+  mostLikedPost
 };
