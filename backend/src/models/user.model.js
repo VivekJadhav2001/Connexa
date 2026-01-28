@@ -1,5 +1,18 @@
 import mongoose from "mongoose";
 
+const sessionSchema = new mongoose.Schema({
+  login:{
+    type:Date,
+    default:Date.now
+  },
+  logout:{
+    type:Date,
+  },
+  device:{
+    type:String
+  }
+})
+
 const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
@@ -17,7 +30,7 @@ const userSchema = new mongoose.Schema(
     phoneNumber: { type: Number, required: true, unique: true },
     password: { type: String, required: true },
 
-    profilePicture: { type: String },
+    profilePicture: { type: String, required:true },
 
     roleType: {
       type: String,
@@ -138,6 +151,8 @@ const userSchema = new mongoose.Schema(
     adminSecretKey: {
       type: String,
     },
+
+    sessions:[sessionSchema]
   },
   { timestamps: true },
 );
