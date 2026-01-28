@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import { User } from "../models/user.model";
+import { User } from "../models/user.model.js";
 
 const getAllUserLogs = async (req, res) => {
   console.log(req, "Request in admin controller");
