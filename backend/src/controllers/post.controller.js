@@ -7,7 +7,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { client } from "../services/S3_Buckets.js";
 
 const createPost = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const {
       postCategory,
@@ -24,7 +24,7 @@ const createPost = async (req, res) => {
         ? JSON.parse(referralDetails)
         : undefined;
 
-    console.log(postCategory, contentType, content, "Fields from frontend");
+    // console.log(postCategory, contentType, content, "Fields from frontend");
     if (!postCategory || !contentType || !content) {
       return res
         .status(400)
@@ -54,7 +54,7 @@ const createPost = async (req, res) => {
 };
 
 const uploadFile = async (req, res) => {
-  console.log(req.body, "upload File API");
+  // console.log(req.body, "upload File API");
 
   try {
     const { files } = req.body;
@@ -161,7 +161,7 @@ const getAllPosts = async (req, res) => {
       .populate("comments.user", "firstName lastName profilePicture")
       .sort({ createdAt: -1 });
 
-    console.log(allPosts, "ALL POSTS");
+    // console.log(allPosts, "ALL POSTS");
 
     res.status(200).json({
       success: true,
@@ -446,6 +446,30 @@ const mostLikedPost = async (req,res)=>{
   }
 }
 
+const editPost = async (req,res)=>{
+  try {
+    const postId = req.params.postId
+    if(!postId){
+      return res.status(400).json({success:false,message:"Post Id Is Missing"})
+    }
+
+    const {caption} = req.body 
+
+    if(!caption){
+      return res.status(400).json({success:false,message:"Content/Caption Required"})
+    }
+
+    const postUpdated = await Post.findByIdAndUpdate(postId,{caption})
+
+    const post = await Post.findById(postId)
+
+    return res.status(200).json({success:false,message:"Post Updated",data:post})
+  } catch (error) {
+    console.log(error,"Edit Post Error")
+    return res.status(500).json({success:false, message:"Internal Server Error"})
+  }
+}
+
 /*
 Reply to a comment
 */
@@ -465,5 +489,6 @@ export {
   editComment,
   getAllCommentsByPost,
   uploadFile,
-  mostLikedPost
+  mostLikedPost,
+  editPost
 };

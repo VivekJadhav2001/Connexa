@@ -106,8 +106,7 @@ const resetPassword = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Token invalid/expired" });
 
-        
-    const hashedPassword = await bcrypt.hash(newPassword,10)
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     user.password = hashedPassword;
     user.passwordResetToken = undefined;
@@ -117,12 +116,112 @@ const resetPassword = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Password reset success" });
   } catch (err) {
-    res.status(500).json({ success: false, message: "Server error", error:err });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err });
+  }
+};
+
+// Update/Edit profile
+const editProfile = async (req, res) => {
+  try {
+    /*
+    Batch, profilePicture, phoneNumber,email,location, centerLocation, socialMedia Links, Skills, isPlaced, job location, experienceYears
+    */
+
+    const {
+      batch,
+      profilePicture,
+      phoneNumber,
+      email,
+      location,
+      centerLocation,
+      github,
+      X,
+      personalWebsite,
+      skills,
+      isPlaced,
+      jobLocation,
+      experienceYears,
+    } = req.body;
+
+    const userId = req.userDecoded.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User Not Found" });
+    }
+
+    //Based on role the required fields need to be send
+    if (user.roleType === "student") {
+      if (batch === "" || centerLocation === "") {
+        return res.status(400).json({
+          success: false,
+          message: "Student profile fields cannot be empty",
+        });
+      }
+    }
+
+    if (user.roleType === "professional") {
+      if (jobLocation === "" || experienceYears === "") {
+        return res.status(400).json({
+          success: false,
+          message: "Professional profile fields cannot be empty",
+        });
+      }
+    }
+
+    const allowedFields = [
+      "batch",
+      "centerLocation",
+      "profilePicture",
+      "phoneNumber",
+      "email",
+      "location",
+      "skills",
+      "isPlaced",
+      "jobLocation",
+      "experienceYears",
+    ];
+
+    const updatedData = {};
+
+    allowedFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        updatedData[field] = req.body[field];
+      }
+    });
+
+    if (github || X || personalWebsite) {
+      updatedData.socialLinks = {
+        github: github ?? user.socialLinks?.github,
+        X: X ?? user.socialLinks?.X,
+        personalWebsite: personalWebsite ?? user.socialLinks?.personalWebsite,
+      };
+    }
+
+    const updatedUserData = await User.findByIdAndUpdate(userId, updatedData, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
+
+    return res.status(200).json({
+      success: true,
+      message: "User Data Is Updated",
+      data: updatedUserData,
+    });
+  } catch (error) {
+    console.log(error, "Error in updating the Profile");
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server error", error: error });
   }
 };
 
 /*
-Update/Edit profile
 
 Apply for verification
 
@@ -133,4 +232,4 @@ Update subscription plan
 
 //forgotPassword is INCOMPLETE
 
-export { profile, forgotPassword, resetPassword };
+export { profile, forgotPassword, resetPassword, editProfile };

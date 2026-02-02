@@ -21,7 +21,7 @@ const getAllUserLogs = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const allUsers = (await User.find({})) / select("-password");
+    const allUsers = await User.find({}).select("-password");
 
     if (!allUsers.length) {
       return res
