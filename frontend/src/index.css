@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+.mtdr {
+    font-family: "Momo Trust Display", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}

@@ -21,7 +21,7 @@ const getAllUserLogs = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const allUsers = (await User.find({})) / select("-password");
+    const allUsers = await User.find({}).select("-password");
 
     if (!allUsers.length) {
       return res
@@ -62,8 +62,6 @@ const getUserById = async (req, res) => {
     return res
       .status(200)
       .json({ success: false, message: "User Data", data: userData });
-
-
   } catch (error) {
     console.log(error, "Get All User By Id Error");
     return res
@@ -72,7 +70,7 @@ const getUserById = async (req, res) => {
   }
 };
 
-export { getAllUserLogs, getAllUsers,getUserById };
+export { getAllUserLogs, getAllUsers, getUserById };
 
 /*
 Day 0 : Build Basic Frontend for Posts and its CRUD ops, Profile Edits , make a pinned Post for admin, and also create another user profile for me(user) for sending connection requests, Make dummy data of 50 Students and build UI of admin dashboards and main app

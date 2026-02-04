@@ -22,7 +22,7 @@ app.use(
     methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 );
 
 // Create success and failure middleware
@@ -57,7 +57,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
 
 //ADMIN ROUTES
-app.use("/admin/users", adminRoutes);
+app.use("/api/admin/users", adminRoutes);
 
 //Create admin/user/professionals
 app.use("/api/create", createIndividual);
@@ -75,5 +75,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(process.env.PORT, () =>
-  console.log(`Server is running at port: ${process.env.PORT}`)
+  console.log(`Server is running at port: ${process.env.PORT}`),
 );

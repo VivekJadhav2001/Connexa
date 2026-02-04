@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { fetchUser } from "./features/userSlice";
 import { ToastContainer } from "react-toastify";
 import { fetchAllPosts } from "./features/postSlice";
+import AdminHome from "./admin/AdminHome";
 
 function App() {
   const mode = useSelector((state) => state.theme.mode);
@@ -27,6 +28,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/admin" element={<AdminHome />} />
           <Route
             path="/home"
             element={

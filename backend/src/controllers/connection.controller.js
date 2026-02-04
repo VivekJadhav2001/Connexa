@@ -127,12 +127,9 @@ const getConnectionStatus = async (req, res) => {
       ],
     });
 
-
     if (!connection) return res.json({ status: "none" });
 
     res.json({ status: connection.status, connectionId: connection._id });
-
-
   } catch (error) {
     return res
       .status(500)

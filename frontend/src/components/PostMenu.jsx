@@ -105,11 +105,10 @@ function MenuItem({ icon, text, danger }) {
   return (
     <div
       className={`flex items-center gap-3 px-4 py-3 text-sm cursor-pointer 
-      ${
-        danger
+      ${danger
           ? "text-red-500 hover:bg-red-950"
           : "text-gray-200 hover:bg-gray-900"
-      }`}
+        }`}
     >
       {icon}
       <span>{text}</span>
