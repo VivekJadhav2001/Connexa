@@ -142,6 +142,7 @@ const signIn = async (req, res) => {
     };
 
     user.sessions.push(session);
+    user.isOnline = true
     await user.save();
 
     // 6. Remove password before sending user data
@@ -184,6 +185,7 @@ const logout = async (req, res) => {
         lastSession.logout = Date.now();
       }
 
+      user.isOnline = false
       user.lastLogout = Date.now();
 
       await user.save();

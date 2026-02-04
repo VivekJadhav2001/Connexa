@@ -160,6 +160,10 @@ const userSchema = new mongoose.Schema(
     },
     passwordResetExpires:{
       type:String
+    },
+    gender:{
+      type:String,
+      required:true
     }
   },
   { timestamps: true },

@@ -5,14 +5,14 @@ const appLoginHistory = async (req, res) => {
     const { latitude, longitude } = req.body;
     const userId = req.userDecoded.id;
 
-    // 1️⃣ Find last active session
+    // Find last active session
     const lastSession = await UserSession.findOne({ userId }).sort({
       createdAt: -1,
     });
 
     let previousSessions = [];
 
-    // 2️⃣ If last session exists & not logged out properly
+    //if last session exists & not logged out properly
     if (lastSession && lastSession.loginAt) {
       previousSessions = lastSession.previousSessions || [];
 
@@ -26,7 +26,7 @@ const appLoginHistory = async (req, res) => {
       }
     }
 
-    // 3️⃣ Create new session
+    //Create new session
     const session = await UserSession.create({
       userId,
       ip: req.ip,
