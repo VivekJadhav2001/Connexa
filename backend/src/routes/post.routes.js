@@ -13,6 +13,7 @@ import {
   getAllCommentsByPost,
   uploadFile,
   mostLikedPost,
+  editPost,
 } from "../controllers/post.controller.js";
 import { authorization } from "../middlewares/authorization.js";
 
@@ -37,5 +38,6 @@ router.get(
 router.post("/uploadFile",authorization,uploadFile)
 
 router.get("/mostLikedPost",authorization,mostLikedPost)
+router.patch("/editPost/:postId",authorization,editPost)
 
 export default router;

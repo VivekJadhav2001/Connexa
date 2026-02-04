@@ -8,13 +8,15 @@ import postRoutes from "./routes/post.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import createIndividual from "./routes/create.routes.js";
-
+import * as useragent from "express-useragent";
+import sessionRoutes from "./routes/log.routes.js"
 dotenv.config();
 
 const originPORTS = ["http://localhost:5173", "http://localhost:5174"];
 
 const app = express();
 app.use(express.json());
+app.use(useragent.express())
 app.use(cookieParser());
 app.use(
   cors({
@@ -50,6 +52,9 @@ app.use((req, res, next) => {
 
 //AUTH ROUTES
 app.use("/api/auth", authRoutes);
+
+//USER SESSION ROUTES
+app.use("/api/session",sessionRoutes)
 
 //USER ROUTES
 app.use("/api/user", userRoutes);

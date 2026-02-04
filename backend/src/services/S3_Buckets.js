@@ -37,10 +37,10 @@ async function uploadFileToS3(fileBuffer, fileName, mimeType) {
   try {
     const awsResponseOnUpload = await client.send(new PutObjectCommand(params));
 
-    console.log("S3 Upload Success:", {
-      key: KEY,
-      etag: awsResponseOnUpload.ETag,
-    });
+    // console.log("S3 Upload Success:", {
+    //   key: KEY,
+    //   etag: awsResponseOnUpload.ETag,
+    // });
 
     return KEY;
   } catch (error) {
@@ -61,7 +61,7 @@ async function getFileFromS3(fileKey) {
   try {
     const file = await client.send(new GetObjectCommand(params));
 
-    console.log(file, " File Return from S3");
+    // console.log(file, " File Return from S3");
 
     return {
       stream: file.Body,

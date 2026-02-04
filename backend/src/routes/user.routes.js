@@ -1,5 +1,5 @@
 import express from "express";
-import { forgotPassword, profile, resetPassword } from "../controllers/user.controller.js";
+import { editProfile, forgotPassword, profile, resetPassword } from "../controllers/user.controller.js";
 import { authorization } from "../middlewares/authorization.js";
 import { acceptConnectionRequest, getConnectionStatus, rejectConnectionRequest, sendConnectionRequest } from "../controllers/connection.controller.js";
 
@@ -14,5 +14,6 @@ router.get("/connect/status/:userId", authorization, getConnectionStatus);
 
 router.post("/forgot-password",forgotPassword)
 router.post("/reset-password/:token", resetPassword);
+router.patch("/editProfile",authorization,editProfile)
 
 export default router;
