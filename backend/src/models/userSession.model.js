@@ -7,20 +7,77 @@ const userSessionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    sessionTime: {
-      type: Number, //May be in seconds or minutes depends on frontend logic
+
+    loginAt: {
+      type: Date,
       required: true,
+      default: Date.now,
     },
+
+    logoutAt: {
+      type: Date,
+    },
+
+    sessionDuration: {
+      type: Number, // seconds
+    },
+
+    previousSessions: [
+      {
+        loginAt: {
+          type: Date,
+        },
+        logoutAt: {
+          type: Date,
+        },
+        sessionDuration: {
+          type: Number,
+        },
+        source: {
+          type: String,
+        },
+      },
+    ],
     source: {
-      type: String, // logout | tab-close | crash,
-      enum: ["logout", "tab-close", "crash", "lastLogin"],
+      type: String,
+      enum: ["logout", "tab-close", "crash"],
       default: "logout",
     },
-    deviceInfo: {
+
+    ip: {
       type: String,
     },
+    location: {
+      latitude: {
+        type: String,
+      },
+      longitude: {
+        type: String,
+      },
+    },
+
+    userAgent: {
+      browser: {
+        type: String,
+      },
+      version: {
+        type: String,
+      },
+      os: {
+        type: String,
+      },
+      platform: {
+        type: String,
+      },
+      isMobile: {
+        type: Boolean,
+      },
+      isDesktop: {
+        type: Boolean,
+      },
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const UserSession = mongoose.model("UserSession", userSessionSchema);

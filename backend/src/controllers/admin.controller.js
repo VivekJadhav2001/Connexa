@@ -72,7 +72,15 @@ const getUserById = async (req, res) => {
   }
 };
 
-export { getAllUserLogs, getAllUsers,getUserById };
+const getAllUserSession = async (req, res)=>{
+  try {
+    
+  } catch (error) {
+    console.log(error,"Error In Getting All User Sessions")
+  }
+}
+
+export { getAllUserLogs, getAllUsers,getUserById,getAllUserSession };
 
 /*
 Day 0 : Build Basic Frontend for Posts and its CRUD ops, Profile Edits , make a pinned Post for admin, and also create another user profile for me(user) for sending connection requests, Make dummy data of 50 Students and build UI of admin dashboards and main app
