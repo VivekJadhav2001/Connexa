@@ -3,19 +3,19 @@ import mongoose from "mongoose";
 const adminSchema = new mongoose.Schema({
   email: {
     type: String,
-    requied: true,
+    required: true,
   },
   firstName: {
     type: String,
-    requied: true,
+    required: true,
   },
   lastName: {
     type: String,
-    requied: true,
+    required: true,
   },
   password: {
     type: String,
-    requied: true,
+    required: true,
   },
   phoneNumber: {
     type: Number,
@@ -25,6 +25,8 @@ const adminSchema = new mongoose.Schema({
     type: String,
     default: "admin",
   },
+  adminSecret: String,
+  adminSecretExpire: Date,
 });
 
 export const Admin = mongoose.model("Admin", adminSchema);

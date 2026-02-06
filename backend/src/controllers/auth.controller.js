@@ -3,6 +3,8 @@ import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { userLog } from "../constants.js";
 import { Admin } from "../models/admin.model.js";
+import crypto from "crypto";
+import sendEmail from "../services/sendEmail.js";
 
 const signUp = async (req, res) => {
   try {
@@ -212,78 +214,114 @@ const logout = async (req, res) => {
   }
 };
 
+const requestAdminSecret = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log(email, password);
+    const admin = await Admin.findOne({ email });
+    console.log(admin, "ADMIN");
+    if (!admin) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Admin not found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Incorrect password" });
+    }
+
+    //CREARE A 6 DIGIT CODE
+    const secret = crypto.randomInt(100000, 999999).toString();
+
+    admin.adminSecret = crypto
+      .createHash("sha256")
+      .update(secret)
+      .digest("hex");
+
+    //Expire this CODE AFTER 10MIN
+    admin.adminSecretExpire = Date.now() + 10 * 60 * 1000;
+    await admin.save();
+
+    await sendEmail({
+      to: admin.email,
+      subject: "Connexa Admin Login Secret",
+      message: `Your admin secret is: ${secret}\nValid for 10 minutes.`,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin secret sent to email",
+    });
+  } catch (error) {
+    console.error("Admin Secret Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 const loginAdmin = async (req, res) => {
   try {
-    const { email, password, adminSecretKey } = req.body;
+    const { email, adminSecret } = req.body;
 
     const admin = await Admin.findOne({ email });
-
     if (!admin) {
-      return res.status(404).json({
+      return res
+        .status(404)
+        .json({ success: false, message: "Admin not found" });
+    }
+
+    const hashedSecret = crypto
+      .createHash("sha256")
+      .update(adminSecret)
+      .digest("hex");
+
+    if (
+      admin.adminSecret !== hashedSecret ||
+      admin.adminSecretExpire < Date.now()
+    ) {
+      return res.status(403).json({
         success: false,
-        message: "Admin not found",
+        message: "Invalid or expired admin secret",
       });
     }
 
-    //compare Password
-    const isMatch = await bcrypt.compare(password, admin.password);
-
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Incorrect password",
-      });
-    }
-
-    // Extra check only for admins
-    if (admin.roleType === "admin") {
-      if (!adminSecretKey) {
-        return res.status(403).json({
-          success: false,
-          message: "Admin secret required",
-        });
-      }
-
-      if (adminSecretKey !== process.env.ADMIN_SECRET) {
-        return res.status(403).json({
-          success: false,
-          message: "Invalid admin secret",
-        });
-      }
-    }
+    // clear secret
+    admin.adminSecret = undefined;
+    admin.adminSecretExpire = undefined;
+    await admin.save();
 
     const token = jwt.sign(
-      {
-        id: admin._id,
-        role: admin.roleType,
-      },
+      { id: admin._id, role: admin.roleType },
       process.env.JWT_SECRET,
       { expiresIn: process.env.EXPIRE_TOKEN },
     );
 
-    // 6. Remove password before sending user data
-    const loginAdmin = await Admin.findById(admin._id).select("-password");
+    const adminData = await Admin.findById(admin._id).select("-password");
 
-    // 7. Send cookie + response
     return res
       .cookie("connexa-admin-token", token, {
         httpOnly: true,
-        secure: false, // true in production with HTTPS
+        secure: false,
         sameSite: "lax",
       })
       .status(200)
       .json({
         success: true,
-        message: "Admin Login successful",
-        data: loginAdmin,
+        message: "Admin login successful",
+        data: adminData,
       });
   } catch (error) {
-    console.error("SignIn Error:", error);
+    console.error("Admin Login Error:", error);
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      message: error.message,
     });
   }
 };
 
-export { signIn, signUp, logout, loginAdmin };
+export { signIn, signUp, logout, loginAdmin, requestAdminSecret };
