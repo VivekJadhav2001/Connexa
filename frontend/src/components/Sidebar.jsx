@@ -6,6 +6,8 @@ import { CgProfile } from "react-icons/cg";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import CreatePostModal from "./CreatePostModal";
+import { useDispatch } from "react-redux";
+import { logout } from "../features/authSlice";
 
 const icons = [
   {
@@ -33,7 +35,13 @@ const icons = [
 export function Sidebar() {
   const [modalOpen, setModalOpen] = useState(false);
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const logoutfunc = async () => {
+    await dispatch(logout());
+    navigate("/signin")
+  }
   return (
     <>
       <aside className="w-64 h-screen p-4 flex flex-col justify-between fixed">
@@ -66,6 +74,9 @@ export function Sidebar() {
         {/* Bottom User Menu placeholder */}
         <div className="mt-6">{/* UserMenu component will go here */}</div>
       </aside>
+
+      <button onClick={() => logoutfunc()} className="absolute text-black bottom-20 left-4 bg-amber-100 px-20 py-4 rounded-2xl">Log Out</button>
+
 
       <CreatePostModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </>

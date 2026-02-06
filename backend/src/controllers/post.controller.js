@@ -42,10 +42,15 @@ const createPost = async (req, res) => {
       media: req.files || [], // array of uploaded files
     });
 
+    const populatedPost = await Post.findById(post._id).populate(
+      "author",
+      "firstName lastName profilePicture",
+    );
+
     res.status(201).json({
       success: true,
       message: "Post created successfully",
-      data: post,
+      data: populatedPost,
     });
   } catch (error) {
     console.error("Create Post Error:", error);
@@ -423,20 +428,23 @@ const getAllCommentsByPost = async (req, res) => {
   }
 };
 
-
-const mostLikedPost = async (req,res)=>{
+const mostLikedPost = async (req, res) => {
   try {
-    const posts = await Post.find({})
-    if(!posts.length){
-      return res.status(404).json({success:false, message:"No Posts Avaliable For Now"})
+    const posts = await Post.find({});
+    if (!posts.length) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No Posts Avaliable For Now" });
     }
-    posts.sort((a,b)=> b.likes.length - a.likes.length)
+    posts.sort((a, b) => b.likes.length - a.likes.length);
 
-    const mostLikedPostOnConnexa = posts[0]
+    const mostLikedPostOnConnexa = posts[0];
 
-    return res.status(200).json({success:false, message:"Most Liked Post on Connexa", data:mostLikedPostOnConnexa})
-
-
+    return res.status(200).json({
+      success: false,
+      message: "Most Liked Post on Connexa",
+      data: mostLikedPostOnConnexa,
+    });
   } catch (error) {
     console.error("get most Viewed Post Error:", error);
     res.status(500).json({
@@ -444,37 +452,43 @@ const mostLikedPost = async (req,res)=>{
       message: "Internal Server Error",
     });
   }
-}
+};
 
-const editPost = async (req,res)=>{
+const editPost = async (req, res) => {
   try {
-    const postId = req.params.postId
-    if(!postId){
-      return res.status(400).json({success:false,message:"Post Id Is Missing"})
+    const postId = req.params.postId;
+    if (!postId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Post Id Is Missing" });
     }
 
-    const {caption} = req.body 
+    const { caption } = req.body;
 
-    if(!caption){
-      return res.status(400).json({success:false,message:"Content/Caption Required"})
+    if (!caption) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Content/Caption Required" });
     }
 
-    const postUpdated = await Post.findByIdAndUpdate(postId,{caption})
+    const postUpdated = await Post.findByIdAndUpdate(postId, { caption });
 
-    const post = await Post.findById(postId)
+    const post = await Post.findById(postId);
 
-    return res.status(200).json({success:false,message:"Post Updated",data:post})
+    return res
+      .status(200)
+      .json({ success: false, message: "Post Updated", data: post });
   } catch (error) {
-    console.log(error,"Edit Post Error")
-    return res.status(500).json({success:false, message:"Internal Server Error"})
+    console.log(error, "Edit Post Error");
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
-}
+};
 
 /*
 Reply to a comment
 */
-
-
 
 export {
   createPost,
@@ -490,5 +504,5 @@ export {
   getAllCommentsByPost,
   uploadFile,
   mostLikedPost,
-  editPost
+  editPost,
 };

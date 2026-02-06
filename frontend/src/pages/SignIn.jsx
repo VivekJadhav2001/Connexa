@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signIn } from "../features/authSlice.js";
 import { FaGoogle, FaApple } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 function SignIn() {
   const [credentials, setCredentials] = useState({

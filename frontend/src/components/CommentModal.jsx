@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
-import { useDispatch } from "react-redux";
-import { createComment } from "../features/postSlice.js";
+// import { createComment } from "../features/postSlice.js";
 import { timeAgo } from "../constants";
 import api from "../utils/api.js";
 
 export default function CommentModal({ post, onClose }) {
   const [text, setText] = useState("");
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const handleSubmit = async (postId) => {
     if (!text.trim()) return;
@@ -81,7 +80,7 @@ export default function CommentModal({ post, onClose }) {
         {/* Reply Button */}
         <div className="flex justify-end mt-4">
           <button
-            onClick={() => handleSubmit(post._Id)}
+            onClick={() => handleSubmit(post._id)}
             className="bg-blue-500 px-4 py-1.5 rounded-full font-semibold disabled:opacity-50"
             disabled={!text.trim()}
           >

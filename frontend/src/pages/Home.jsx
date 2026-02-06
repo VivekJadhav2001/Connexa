@@ -6,10 +6,10 @@ import { Sidebar } from "../components/Sidebar";
 import { useSelector } from "react-redux";
 
 export default function Home() {
-  const state = useSelector((state) => state);
 
   const allPosts = useSelector((state) => state.posts.posts);
   const loading = useSelector((state) => state.posts.loading);
+  const userInfo = useSelector((state) => state.user.currentUser);
 
   // console.log(state, "home page state")
   console.log(allPosts, "All posts in home");
@@ -20,7 +20,10 @@ export default function Home() {
       <div className="flex w-full max-w-7xl">
         {/* Left Sidebar */}
         <aside className="w-64 hidden md:block border-r border-gray-800 sticky top-0 h-screen">
+
           <Sidebar />
+
+          <div>{userInfo?.userName}</div>
         </aside>
 
         {/* Center Feed */}

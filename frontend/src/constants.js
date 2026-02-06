@@ -41,6 +41,7 @@ export const CENTERS = ["Pune", "Hyderabad", "Noida", "Bangalore", "Chennai"];
 
 export const COURSES = ["MERN", "JAVA", "DA", "DS"];
 
+export const GENDER = ["male", "female", "others"];
 export const getJoinedDate = (strDate) => {
   const months = [
     "January",
@@ -88,6 +89,12 @@ const NAME_FIELDS = [
 ];
 
 const STUDENT_FIELDS = [
+  {
+    name: "gender",
+    type: "select",
+    placeholder: "Select Gender",
+    options: GENDER,
+  },
   {
     name: "batch",
     type: "select",

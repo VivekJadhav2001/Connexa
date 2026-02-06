@@ -20,11 +20,15 @@ router.get("/getAllUsers", adminAuthorization, getAllUsers);
 
 router.get("/getUser/:userId", adminAuthorization, getUserById);
 
-router.get("/getAllUserSessions",adminAuthorization,getAllUserSession)
-router.get("/getUserSession/:userId",adminAuthorization,getSessionByUserId)
-router.delete("/deleteUserSession",adminAuthorization,deleteLogSessionByUserId)
-router.get("/getAllUsersByIP/:ip",adminAuthorization,getUsersSessionByIP)
-router.get("/getAllActiveUsers",adminAuthorization,getAllActiveUsers)
-router.delete("/deleteUser/:userId",adminAuthorization,deleteUserById)
+router.get("/getAllUserSessions", adminAuthorization, getAllUserSession);
+router.get("/getUserSession/:userId", adminAuthorization, getSessionByUserId);
+router.delete(
+  "/deleteUserSession",
+  adminAuthorization,
+  deleteLogSessionByUserId,
+);
+router.get("/getAllUsersByIP/:ip", adminAuthorization, getUsersSessionByIP);
+router.get("/getAllActiveUsers", adminAuthorization, getAllActiveUsers);
+router.delete("/deleteUser/:userId", adminAuthorization, deleteUserById);
 
 export default router;

@@ -19,7 +19,7 @@ export const signUp = createAsyncThunk(
       console.log(error, "Error in Sign Up signUp");
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 export const signIn = createAsyncThunk(
@@ -31,9 +31,19 @@ export const signIn = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async (data, { rejectWithValue }) => {
+    try {
+      await api.post("/auth/logout");
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message);
+    }
+  },
+);
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -48,7 +58,7 @@ const authSlice = createSlice({
         (state) => {
           state.loading = true;
           state.error = null;
-        }
+        },
       )
 
       .addMatcher(
@@ -59,7 +69,7 @@ const authSlice = createSlice({
           state.user = action.payload;
           state.isAuthenticated = true;
           state.authChecked = true;
-        }
+        },
       )
 
       .addMatcher(
@@ -69,7 +79,18 @@ const authSlice = createSlice({
           state.loading = false;
           state.error = action.payload;
           state.authChecked = true;
-        }
+        },
+      )
+
+      .addMatcher(
+        (action) => action.type === logout.fulfilled.type,
+        (state, action) => {
+          state.loading = false;
+          state.user = null;
+          state.error = action.payload;
+          state.isAuthenticated = false;
+          state.authChecked = false;
+        },
       );
   },
 });

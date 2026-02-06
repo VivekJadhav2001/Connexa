@@ -100,8 +100,8 @@ export default function CreatePostModal({ isOpen, onClose }) {
                         urls.length > 1
                             ? "carousel"
                             : urls.length === 1
-                              ? mediaFiles[0].file.type.split("/")[0]
-                              : "text", // no media = text post
+                                ? mediaFiles[0].file.type.split("/")[0]
+                                : "text", // no media = text post
                     content:
                         urls.length > 0
                             ? urls.map((u) => u.publicUrl)
@@ -277,11 +277,10 @@ export default function CreatePostModal({ isOpen, onClose }) {
 
                 <button
                     className={`px-6 py-2 rounded-full font-semibold  transition
-              ${
-                  content.trim().length === 0 && mediaFiles.length === 0
-                      ? "bg-blue-500/40 cursor-not-allowed"
-                      : "bg-blue-500 hover:bg-blue-600"
-              }`}
+              ${content.trim().length === 0 && mediaFiles.length === 0
+                            ? "bg-blue-500/40 cursor-not-allowed"
+                            : "bg-blue-500 hover:bg-blue-600"
+                        }`}
                     onClick={uploadPost}
                 >
                     {loading ? "Uploading ...." : "Upload"}

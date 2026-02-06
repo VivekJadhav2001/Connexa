@@ -142,7 +142,7 @@ const signIn = async (req, res) => {
     };
 
     user.sessions.push(session);
-    user.isOnline = true
+    user.isOnline = true;
     await user.save();
 
     // 6. Remove password before sending user data
@@ -174,26 +174,34 @@ const signIn = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    const userId = req.userDecoded.id;
+    const userId = req.userDecoded?.id;
 
     if (userId) {
       const user = await User.findById(userId);
 
-      const lastSession = user.sessions[user.sessions - 1];
+      if (user && user.sessions.length > 0) {
+        const lastSession = user.sessions[user.sessions.length - 1];
 
-      if (lastSession && !lastSession.logout) {
-        lastSession.logout = Date.now();
+        if (lastSession && !lastSession.logout) {
+          lastSession.logout = new Date();
+        }
       }
 
-      user.isOnline = false
-      user.lastLogout = Date.now();
+      user.isOnline = false;
+      user.lastLogout = new Date();
 
       await user.save();
     }
-    req.clearCookie("accioConnect-token", {
+
+    res.clearCookie("accioConnect-token", {
       httpOnly: true,
-      secure: false,
+      secure: false, // MUST match how you set it
       sameSite: "lax",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
     });
   } catch (error) {
     console.error("Logout Error:", error);

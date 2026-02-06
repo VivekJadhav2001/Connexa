@@ -19,10 +19,10 @@ export default function PostMenu({ postDetails }) {
   const [followLoading, setFollowLoading] = useState(false);
   const menuRef = useRef();
 
-  const currentUserId = useSelector((state) => state.user.currentUser._id);
+  const currentUserId = useSelector((state) => state.user.currentUser?._id);
   const dispatch = useDispatch();
 
-  const isOwner = currentUserId === postDetails.author._id;
+  const isOwner = currentUserId === postDetails.author?._id;
 
   function deletePostById(postId) {
     dispatch(deletePost(postId));

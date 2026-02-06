@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
 
 const sessionSchema = new mongoose.Schema({
-  login:{
-    type:Date,
-    default:Date.now
+  login: {
+    type: Date,
+    default: Date.now,
   },
-  logout:{
-    type:Date,
+  logout: {
+    type: Date,
   },
-  device:{
-    type:String
-  }
-})
+  device: {
+    type: String,
+  },
+});
 
 const userSchema = new mongoose.Schema(
   {
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
     phoneNumber: { type: Number, required: true, unique: true },
     password: { type: String, required: true },
 
-    profilePicture: { type: String, required:true },
+    profilePicture: { type: String },
 
     roleType: {
       type: String,
@@ -119,14 +119,18 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // admin
     },
-    following:[{
-      type:mongoose.Schema.Types.ObjectId,
-      ref:"User"
-    }],
-    followers:[{
-      type:mongoose.Schema.Types.ObjectId,
-      ref:"User"
-    }],
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
 
     // ===== Subscription =====
     subscription: {
@@ -153,18 +157,18 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
 
-    sessions:[sessionSchema],
+    sessions: [sessionSchema],
 
-    passwordResetToken:{
-      type:String
+    passwordResetToken: {
+      type: String,
     },
-    passwordResetExpires:{
-      type:String
+    passwordResetExpires: {
+      type: String,
     },
-    gender:{
-      type:String,
-      required:true
-    }
+    gender: {
+      type: String,
+      // required: true,
+    },
   },
   { timestamps: true },
 );
