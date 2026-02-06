@@ -32,10 +32,10 @@ function SignIn() {
 
   /* ================= ADMIN STEP 1 ================= */
   async function sendAdminSecret() {
-    console.log("WORKING FINE")
+    console.log("WORKING FINE");
     try {
       // await axios.post("/admin/request-secret", credentials);
-      await api.post("/auth/requestSecretKey", credentials)
+      await api.post("/auth/requestSecretKey", credentials);
       toast.success("Admin secret sent to email");
       setStep(2);
     } catch (err) {
@@ -51,7 +51,10 @@ function SignIn() {
       //   { email: credentials.email, adminSecret },
       //   { withCredentials: true }
       // );
-      await api.post("/auth/adminSignIn",{ email: credentials.email, adminSecret })
+      await api.post("/auth/adminSignIn", {
+        email: credentials.email,
+        adminSecret,
+      });
       navigate("/admin");
     } catch (err) {
       toast.error(err.response?.data?.message);
@@ -152,6 +155,18 @@ function SignIn() {
               Verify & Login
             </button>
           </>
+        )}
+
+        {tab === "user" && (
+          <p className="text-sm text-gray-400 mt-4">
+            Forgot your password?{" "}
+            <Link
+              to="/forgot-password"
+              className="text-blue-500 hover:underline"
+            >
+              Reset here
+            </Link>
+          </p>
         )}
 
         {/* Signup */}

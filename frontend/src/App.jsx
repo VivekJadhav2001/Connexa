@@ -11,6 +11,8 @@ import { fetchUser } from "./features/userSlice";
 import { ToastContainer } from "react-toastify";
 import { fetchAllPosts } from "./features/postSlice";
 import AdminHome from "./admin/AdminHome";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 
 function App() {
   const mode = useSelector((state) => state.theme.mode);
@@ -46,6 +48,8 @@ function App() {
               </ProjectedRoute>
             }
           />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
       </BrowserRouter>
 
