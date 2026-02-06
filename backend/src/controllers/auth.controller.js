@@ -258,7 +258,7 @@ const loginAdmin = async (req, res) => {
 
     // 7. Send cookie + response
     return res
-      .cookie("accioConnect-token", token, {
+      .cookie("connexa-admin-token", token, {
         httpOnly: true,
         secure: false, // true in production with HTTPS
         sameSite: "lax",

@@ -204,7 +204,6 @@ const getAllActiveUsers = async (req, res) => {
         passwordResetExpires: 0,
       },
     )
-
     res.status(200).json({
       success: true,
       count: users.length,

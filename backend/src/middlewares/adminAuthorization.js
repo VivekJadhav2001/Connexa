@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import { Admin } from "../models/admin.model.js";
 
 async function adminAuthorization(req, res, next) {
   try {
-    const token = req.cookies["accioConnect-token"];
+    const token = req.cookies["connexa-admin-token"];
 
     if (!token) {
       return res
@@ -15,7 +16,7 @@ async function adminAuthorization(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Find user
-    const user = await User.findById(decoded.id);
+    const user = await Admin.findById(decoded.id);
 
     if (!user) {
       return res
