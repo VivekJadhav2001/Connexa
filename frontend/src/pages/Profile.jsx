@@ -8,29 +8,32 @@ import { FaChalkboardTeacher } from "react-icons/fa";
 import api from "../utils/api";
 import { useState } from "react";
 
+import UpdateProfilePictureModal from "../components/UpdateProfilePictureModal";
+
 export default function Profile() {
   const navigate = useNavigate();
   const getAllPosts = useSelector((state) => state.posts.posts);
   console.log(getAllPosts);
 
-  const [userPosts, setUserPosts] = useState([])
+  const [isProfilePicModalOpen, setIsProfilePicModalOpen] = useState(false);
+
+  const [userPosts, setUserPosts] = useState([]);
   const userData = useSelector((state) => state.user.currentUser);
   // console.log(userData, "User Data in profile");
   const JoinedDate = userData?.createdAt
     ? getJoinedDate(userData.createdAt)
     : "";
 
-
   async function fetchUserPosts() {
     // Fetch posts logic here
-    const res = await api.get("/post/my-posts")
-    setUserPosts(res.data.data)
+    const res = await api.get("/post/my-posts");
+    setUserPosts(res.data.data);
     // console.log(res.data.data,"MY POSTS")
   }
-  
-  useEffect(()=>{
-    fetchUserPosts()
-  },[])
+
+  useEffect(() => {
+    fetchUserPosts();
+  }, []);
 
   return (
     <div className="border-x border-gray-800 min-h-screen bg-black text-white">
@@ -54,30 +57,22 @@ export default function Profile() {
 
       {/* Cover */}
       <div className="h-52 bg-linear-to-r from-gray-700 to-gray-800">
-        <img className="h-full" src="https://njvawavweamzvvakmsgn.supabase.co/storage/v1/object/public/accioconnect/Blue%20White%20Aesthetic%20Welcome%20to%20My%20Profile%20Twitter%20Header.png" alt="sai" />
+        <img
+          className="h-full"
+          src="https://njvawavweamzvvakmsgn.supabase.co/storage/v1/object/public/accioconnect/Blue%20White%20Aesthetic%20Welcome%20to%20My%20Profile%20Twitter%20Header.png"
+          alt="sai"
+        />
       </div>
 
       {/* Profile Section */}
       <div className="px-4 relative">
         {/* Avatar */}
 
-        {userData?.profilePicture ? (
-          <img
-            src={userData?.profilePicture}
-            alt="profile"
-            className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
-          />
-        ) : (
-          <img
-            src="/avatar.png"
-            alt="profile"
-            className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
-          />
-        )}
         <img
-          src="/avatar.png"
+          src={userData?.profilePicture || "/avatar.png"}
           alt="profile"
-          className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900"
+          onClick={() => setIsProfilePicModalOpen(true)}
+          className="w-32 h-32 rounded-full border-4 border-black shadow-lg absolute -top-16 bg-gray-900 cursor-pointer"
         />
 
         {/* Edit Button */}
@@ -140,9 +135,10 @@ export default function Profile() {
           <button
             key={tab}
             className={`py-3 w-full text-center hover:bg-gray-900 transition
-              ${i === 0
-                ? "border-b-2 border-blue-500 font-semibold"
-                : "text-gray-400"
+              ${
+                i === 0
+                  ? "border-b-2 border-blue-500 font-semibold"
+                  : "text-gray-400"
               }
             `}
           >
@@ -179,6 +175,14 @@ export default function Profile() {
           ))}
         </div>
       </div>
+
+      <UpdateProfilePictureModal
+        isOpen={isProfilePicModalOpen}
+        onClose={() => {
+          setIsProfilePicModalOpen(false) 
+          console.log("working")
+        }}
+      />
     </div>
   );
 }

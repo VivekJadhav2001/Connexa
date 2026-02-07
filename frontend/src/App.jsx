@@ -24,7 +24,7 @@ function App() {
     document.documentElement.classList.toggle("dark", mode === "dark");
   }, [mode, dispatch]);
   return (
-    <div className="bg-gray-900 h-screen">
+    <div className="mtdr bg-gray-900 h-screen">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
