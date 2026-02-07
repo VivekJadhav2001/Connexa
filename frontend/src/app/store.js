@@ -3,13 +3,16 @@ import authReducer from "../features/authSlice.js";
 import theme from "../features/themeSlice.js";
 import user from "../features/userSlice.js";
 import postReducer from "../features/postSlice.js";
-
+import adminUsersReducer from "../features/AdminSlices/adminUsersSlice.js"
+import adminUsersPostsReducer from "../features/AdminSlices/adminPostsSlice.js"
 const store = configureStore({
   reducer: {
     auth: authReducer,
     theme: theme,
     user: user,
     posts: postReducer,
+    adminUsers: adminUsersReducer, 
+    adminUsersPosts:adminUsersPostsReducer
   },
 });
 

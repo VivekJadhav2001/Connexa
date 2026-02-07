@@ -13,6 +13,7 @@ import { fetchAllPosts } from "./features/postSlice";
 import AdminHome from "./admin/AdminHome";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import AdminProtectedRoutes from "./routes/AdminProtectedRoutes";
 
 function App() {
   const mode = useSelector((state) => state.theme.mode);
@@ -30,7 +31,14 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<SignIn />} />
-          <Route path="/admin" element={<AdminHome />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminProtectedRoutes>
+                <AdminHome />
+              </AdminProtectedRoutes> 
+            }
+          />
           <Route
             path="/home"
             element={

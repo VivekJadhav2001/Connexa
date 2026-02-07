@@ -10,8 +10,8 @@ import {
   getUserById,
   getUsersSessionByIP,
 } from "../controllers/admin.controller.js";
-import { authorization } from "../middlewares/authorization.js";
 import { adminAuthorization } from "../middlewares/adminAuthorization.js";
+import { deletePost, getAllPosts } from "../controllers/post.controller.js";
 
 const router = express.Router();
 
@@ -30,5 +30,14 @@ router.delete(
 router.get("/getAllUsersByIP/:ip", adminAuthorization, getUsersSessionByIP);
 router.get("/getAllActiveUsers", adminAuthorization, getAllActiveUsers);
 router.delete("/deleteUser/:userId", adminAuthorization, deleteUserById);
+router.get("/getAllPosts", adminAuthorization, getAllPosts);
+router.delete("/deletePost/:postId", adminAuthorization, deletePost);
+
+router.get("/check", adminAuthorization, (req, res) => {
+  res.status(200).json({
+    success: true,
+    admin: req.admin,
+  });
+});
 
 export default router;
