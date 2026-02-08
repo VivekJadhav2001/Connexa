@@ -8,6 +8,9 @@ import { toggleTheme } from '../../features/themeSlice';
 
 export default function Header() {
     const mode = useSelector((state) => state.theme.mode);
+    const adminAuthDetails = useSelector((state)=>state.adminAuth.admin);
+
+
     const dispatch = useDispatch();
     useEffect(() => {
         document.documentElement.classList.toggle("dark", mode === "dark");
@@ -65,7 +68,8 @@ export default function Header() {
                     className="flex items-center gap-3 ml-2 md:ml-4 pl-2 md:pl-4 border-l border-border"
                 >
                     <div className="hidden md:flex flex-col items-end">
-                        <span className="text-sm font-medium">Sai Narendra Tanniru</span>
+                        <span className="text-sm font-medium">{adminAuthDetails?.firstName + " " + adminAuthDetails?.lastName}</span>
+                        <span className="text-sm font-medium">{adminAuthDetails?.email}</span>
                         <span className="text-xs text-foreground/60">Connexa</span>
                     </div>
                     <div className="w-10 h-10 rounded-lg gradient-orange flex items-center justify-center cursor-pointer">

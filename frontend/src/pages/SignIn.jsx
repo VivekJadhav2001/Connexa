@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { signIn } from "../features/authSlice.js";
 import { toast } from "react-toastify";
 import api from "../utils/api.js";
+import { setAdmin } from "../features/AdminSlices/adminAuthSlice.js";
 
 function SignIn() {
   const [tab, setTab] = useState("user"); // user | admin
@@ -51,10 +52,12 @@ function SignIn() {
       //   { email: credentials.email, adminSecret },
       //   { withCredentials: true }
       // );
-      await api.post("/auth/adminSignIn", {
+      const res = await api.post("/auth/adminSignIn", {
         email: credentials.email,
         adminSecret,
       });
+
+      dispatch(setAdmin(res.data.data));
       navigate("/admin");
     } catch (err) {
       toast.error(err.response?.data?.message);

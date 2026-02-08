@@ -3,25 +3,26 @@
 import { motion } from 'framer-motion'
 import { Users, TrendingUp } from 'lucide-react'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-
-const userData = [
-    { month: 'Jan', users: 2400, active: 1400 },
-    { month: 'Feb', users: 3210, active: 2210 },
-    { month: 'Mar', users: 2290, active: 2000 },
-    { month: 'Apr', users: 2000, active: 1900 },
-    { month: 'May', users: 2181, active: 2100 },
-    { month: 'Jun', users: 2500, active: 2400 },
-]
-
-const topUsers = [
-    { id: 1, name: 'Sarah Chen', handle: '@sarahchen', followers: '24.5K', posts: 342, verified: true },
-    { id: 2, name: 'Marcus Johnson', handle: '@mjohnson', followers: '18.2K', posts: 256, verified: true },
-    { id: 3, name: 'Emily Davis', handle: '@emilydavis', followers: '15.8K', posts: 198, verified: false },
-    { id: 4, name: 'Alex Rivera', handle: '@alexrivera', followers: '12.3K', posts: 167, verified: false },
-    { id: 5, name: 'Jordan Smith', handle: '@jsmith', followers: '9.7K', posts: 145, verified: false },
-]
+import { useSelector } from 'react-redux'
 
 export default function UserSection() {
+    const allusers = useSelector((state) => state.adminUsers)
+
+    const totalUsers = allusers?.allUsers?.length || 0
+    const activeUsers = allusers?.activeUsers?.length || 0
+
+    // simple derived chart data (monthly split fallback)
+    const userData = [
+        { month: 'Jan', users: totalUsers * 0.4, active: activeUsers * 0.3 },
+        { month: 'Feb', users: totalUsers * 0.5, active: activeUsers * 0.4 },
+        { month: 'Mar', users: totalUsers * 0.6, active: activeUsers * 0.5 },
+        { month: 'Apr', users: totalUsers * 0.7, active: activeUsers * 0.6 },
+        { month: 'May', users: totalUsers * 0.85, active: activeUsers * 0.75 },
+        { month: 'Jun', users: totalUsers, active: activeUsers },
+    ]
+
+    const topUsers = allusers?.allUsers?.slice(0, 5) || []
+
     const container = {
         hidden: { opacity: 0 },
         show: {
@@ -44,8 +45,12 @@ export default function UserSection() {
         >
             {/* Header */}
             <motion.div variants={item}>
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Community Users</h1>
-                <p className="text-foreground/60">Manage and track your community members</p>
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                    Community Users
+                </h1>
+                <p className="text-foreground/60">
+                    Manage and track your community members
+                </p>
             </motion.div>
 
             {/* Stats Cards */}
@@ -54,9 +59,9 @@ export default function UserSection() {
                 className="grid grid-cols-1 md:grid-cols-3 gap-4"
             >
                 {[
-                    { label: 'Total Users', value: '12,450', change: '+23%', color: 'primary' },
-                    { label: 'Active Today', value: '3,847', change: '+12%', color: 'accent' },
-                    { label: 'New This Week', value: '486', change: '+5%', color: 'primary' },
+                    { label: 'Total Users', value: totalUsers, change: '+', color: 'primary' },
+                    { label: 'Active Today', value: activeUsers, change: '+', color: 'accent' },
+                    { label: 'New This Week', value: Math.floor(totalUsers * 0.05), change: '+', color: 'primary' },
                 ].map((stat, idx) => (
                     <motion.div
                         key={idx}
@@ -66,11 +71,12 @@ export default function UserSection() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-foreground/60 text-sm">{stat.label}</p>
-                                <h3 className="text-2xl md:text-3xl font-bold text-foreground mt-2">{stat.value}</h3>
+                                <h3 className="text-2xl md:text-3xl font-bold text-foreground mt-2">
+                                    {stat.value}
+                                </h3>
                             </div>
                             <div className="flex items-center gap-2">
                                 <TrendingUp className={`w-5 h-5 text-${stat.color}`} />
-                                <span className="text-sm font-medium text-primary">{stat.change}</span>
                             </div>
                         </div>
                     </motion.div>
@@ -84,7 +90,9 @@ export default function UserSection() {
             >
                 {/* User Growth Chart */}
                 <div className="bg-card border border-border rounded-xl p-6 backdrop-blur">
-                    <h3 className="text-lg font-semibold text-foreground mb-4">User Growth</h3>
+                    <h3 className="text-lg font-semibold text-foreground mb-4">
+                        User Growth
+                    </h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart data={userData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#3a3530" />
@@ -104,7 +112,6 @@ export default function UserSection() {
                                 stroke="#d4804a"
                                 strokeWidth={2}
                                 dot={{ fill: '#d4804a', r: 4 }}
-                                activeDot={{ r: 6 }}
                             />
                             <Line
                                 type="monotone"
@@ -112,7 +119,6 @@ export default function UserSection() {
                                 stroke="#2a9d8f"
                                 strokeWidth={2}
                                 dot={{ fill: '#2a9d8f', r: 4 }}
-                                activeDot={{ r: 6 }}
                             />
                         </LineChart>
                     </ResponsiveContainer>
@@ -120,7 +126,9 @@ export default function UserSection() {
 
                 {/* User Engagement */}
                 <div className="bg-card border border-border rounded-xl p-6 backdrop-blur">
-                    <h3 className="text-lg font-semibold text-foreground mb-4">User Engagement</h3>
+                    <h3 className="text-lg font-semibold text-foreground mb-4">
+                        User Engagement
+                    </h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={userData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#3a3530" />
@@ -147,13 +155,15 @@ export default function UserSection() {
             >
                 <div className="flex items-center gap-2 mb-6">
                     <Users className="w-5 h-5 text-primary" />
-                    <h3 className="text-lg font-semibold text-foreground">Top Community Members</h3>
+                    <h3 className="text-lg font-semibold text-foreground">
+                        Top Community Members
+                    </h3>
                 </div>
 
                 <div className="space-y-4">
                     {topUsers.map((user, idx) => (
                         <motion.div
-                            key={user.id}
+                            key={user._id}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.1 }}
@@ -161,24 +171,17 @@ export default function UserSection() {
                         >
                             <div className="flex items-center gap-4 flex-1">
                                 <div className="w-12 h-12 rounded-lg gradient-orange flex items-center justify-center">
-                                    <span className="text-white font-bold">{user.name.charAt(0)}</span>
+                                    <span className="text-white font-bold">
+                                        {user.firstName?.charAt(0)}
+                                    </span>
                                 </div>
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <h4 className="font-semibold text-foreground">{user.name}</h4>
-                                        {user.verified && <span className="text-primary text-xs">✓</span>}
-                                    </div>
-                                    <p className="text-sm text-foreground/60">{user.handle}</p>
-                                </div>
-                            </div>
-                            <div className="hidden md:flex items-center gap-8 text-right">
-                                <div>
-                                    <p className="text-sm text-foreground/60">Followers</p>
-                                    <p className="font-semibold text-foreground">{user.followers}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-foreground/60">Posts</p>
-                                    <p className="font-semibold text-foreground">{user.posts}</p>
+                                    <h4 className="font-semibold text-foreground">
+                                        {user.firstName} {user.lastName}
+                                    </h4>
+                                    <p className="text-sm text-foreground/60">
+                                        {user.email}
+                                    </p>
                                 </div>
                             </div>
                         </motion.div>

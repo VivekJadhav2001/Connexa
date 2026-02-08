@@ -112,8 +112,8 @@ export const fetchUsersByIP = createAsyncThunk(
 );
 
 //  Get user activity logs
-export const fetchUserLogs = createAsyncThunk(
-  "adminUsers/fetchUserLogs",
+export const fetchUsersLogs = createAsyncThunk(
+  "adminUsers/fetchUsersLogs",
   async (_, { rejectWithValue }) => {
     try {
       const res = await api.get("/admin/users/getAllUserLogs");
@@ -190,7 +190,7 @@ const adminUsersSlice = createSlice({
       .addCase(fetchUsersByIP.fulfilled, (state, action) => {
         state.usersByIP = action.payload;
       })
-      .addCase(fetchUserLogs.fulfilled, (state, action) => {
+      .addCase(fetchUsersLogs.fulfilled, (state, action) => {
         state.userLogs = action.payload;
       })
 
