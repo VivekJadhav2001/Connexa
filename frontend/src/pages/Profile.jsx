@@ -135,10 +135,9 @@ export default function Profile() {
           <button
             key={tab}
             className={`py-3 w-full text-center hover:bg-gray-900 transition
-              ${
-                i === 0
-                  ? "border-b-2 border-blue-500 font-semibold"
-                  : "text-gray-400"
+              ${i === 0
+                ? "border-b-2 border-blue-500 font-semibold"
+                : "text-gray-400"
               }
             `}
           >
@@ -179,7 +178,7 @@ export default function Profile() {
       <UpdateProfilePictureModal
         isOpen={isProfilePicModalOpen}
         onClose={() => {
-          setIsProfilePicModalOpen(false) 
+          setIsProfilePicModalOpen(false)
           console.log("working")
         }}
       />

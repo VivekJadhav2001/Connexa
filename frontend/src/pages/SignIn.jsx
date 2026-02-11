@@ -5,6 +5,8 @@ import { signIn } from "../features/authSlice.js";
 import { toast } from "react-toastify";
 import api from "../utils/api.js";
 import { setAdmin } from "../features/AdminSlices/adminAuthSlice.js";
+import { fetchUser } from "../features/userSlice.js";
+import { fetchAllPosts } from "../features/postSlice.js";
 
 function SignIn() {
   const [tab, setTab] = useState("user"); // user | admin
@@ -25,8 +27,12 @@ function SignIn() {
     e.preventDefault();
     try {
       await dispatch(signIn(credentials)).unwrap();
+      // Fetch user data and posts after successful login
+      await dispatch(fetchUser()).unwrap();
+      await dispatch(fetchAllPosts()).unwrap();
       navigate("/home");
-    } catch {
+    } catch (error) {
+      console.error("Login error:", error);
       toast.error("Invalid email or password");
     }
   }
@@ -82,9 +88,8 @@ function SignIn() {
               setTab("user");
               setStep(1);
             }}
-            className={`pb-2 ${
-              tab === "user" ? "border-b-2 border-blue-500" : "text-gray-400"
-            }`}
+            className={`pb-2 ${tab === "user" ? "border-b-2 border-blue-500" : "text-gray-400"
+              }`}
           >
             User Login
           </button>
@@ -94,9 +99,8 @@ function SignIn() {
               setTab("admin");
               setStep(1);
             }}
-            className={`pb-2 ${
-              tab === "admin" ? "border-b-2 border-blue-500" : "text-gray-400"
-            }`}
+            className={`pb-2 ${tab === "admin" ? "border-b-2 border-blue-500" : "text-gray-400"
+              }`}
           >
             Admin Login
           </button>

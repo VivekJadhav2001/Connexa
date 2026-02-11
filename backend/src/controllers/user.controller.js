@@ -280,12 +280,10 @@ const updateProfilePicture = async (req, res) => {
     const userId = req.userDecoded.id;
 
     if (!userId) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Unauthorized To Perform This Action",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized To Perform This Action",
+      });
     }
 
     if (!profilePicture) {
@@ -330,7 +328,7 @@ const removeProfilePicture = async (req, res) => {
       new DeleteObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: key,
-      })
+      }),
     );
 
     user.profilePicture = "";
@@ -345,8 +343,6 @@ const removeProfilePicture = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
 
 /*
 

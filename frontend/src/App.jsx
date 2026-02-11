@@ -18,12 +18,15 @@ import AdminProtectedRoutes from "./routes/AdminProtectedRoutes";
 function App() {
   const mode = useSelector((state) => state.theme.mode);
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   useEffect(() => {
-    dispatch(fetchUser());
-    dispatch(fetchAllPosts());
+    if (isAuthenticated) {
+      dispatch(fetchUser());
+      dispatch(fetchAllPosts());
+    }
     document.documentElement.classList.toggle("dark", mode === "dark");
-  }, [mode, dispatch]);
+  }, [mode, dispatch, isAuthenticated]);
   return (
     <div className="mtdr bg-gray-900 h-screen">
       <BrowserRouter>
@@ -36,7 +39,7 @@ function App() {
             element={
               <AdminProtectedRoutes>
                 <AdminHome />
-              </AdminProtectedRoutes> 
+              </AdminProtectedRoutes>
             }
           />
           <Route

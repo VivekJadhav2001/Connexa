@@ -4,7 +4,7 @@ import { UserSession } from "../models/userSession.model.js";
 import mongoose from "mongoose";
 
 const getAllUserLogs = async (req, res) => {
-  console.log(req, "Request in admin controller");
+  // console.log(req, "Request in admin controller");
   try {
     const userLogsData = await fs.readFile("./src/logs/users.txt", "utf-8");
 
@@ -203,12 +203,12 @@ const getAllActiveUsers = async (req, res) => {
         passwordResetToken: 0,
         passwordResetExpires: 0,
       },
-    )
+    );
     res.status(200).json({
       success: true,
       count: users.length,
-      message:"All Active Users",
-      data:users
+      message: "All Active Users",
+      data: users,
     });
   } catch (error) {
     console.log(error, "Error In Getting All Active Users");
@@ -218,39 +218,47 @@ const getAllActiveUsers = async (req, res) => {
   }
 };
 
-const deleteUserById = async (req,res)=>{
+const deleteUserById = async (req, res) => {
   try {
-    const userId = req.params.userId 
+    const userId = req.params.userId;
 
-    if(!userId){
-      return res.status(400).json({success:false,message:"User Id Is Required"})
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User Id Is Required" });
     }
 
     //THIS IS TO CHECK if it IS  A MONGOOSE ID
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid User Id"
+        message: "Invalid User Id",
       });
     }
 
-    const deletedUser = await User.findByIdAndDelete(userId)
+    const deletedUser = await User.findByIdAndDelete(userId);
 
     if (!deletedUser) {
       return res.status(404).json({
         success: false,
-        message: "User Not Found"
+        message: "User Not Found",
       });
     }
 
-    return res.status(200).json({success:true,message:"User Deleted Successfully",data:deletedUser})
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message: "User Deleted Successfully",
+        data: deletedUser,
+      });
   } catch (error) {
     console.log(error, "Error In Deleting User");
     return res
       .status(500)
       .json({ success: false, message: "Internal Server Error" });
   }
-}
+};
 
 export {
   getAllUserLogs,
@@ -261,7 +269,7 @@ export {
   deleteLogSessionByUserId,
   getUsersSessionByIP,
   getAllActiveUsers,
-  deleteUserById
+  deleteUserById,
 };
 
 /*

@@ -1,26 +1,26 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../utils/api";
 
 function ResetPassword() {
-  const { token } = useParams(); 
+  const { token } = useParams();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  async function resetPassword(){
+  const navigate = useNavigate();
+  async function resetPassword() {
     if (password !== confirmPassword) {
       return toast.error("Passwords do not match");
     }
     try {
-        await api.post(`/user/reset-password/${token}`, {
+      await api.post(`/user/reset-password/${token}`, {
         newPassword: password,
       });
 
       toast.success("Password reset successful");
       navigate("/signin");
     } catch (error) {
-        toast.error(
+      toast.error(
         error.response?.data?.message || "Reset link expired or invalid"
       );
     }
@@ -48,7 +48,7 @@ function ResetPassword() {
         />
 
         <button
-        type="button"
+          type="button"
           className="w-full bg-green-500 py-3 rounded-full font-semibold"
           onClick={resetPassword}
         >

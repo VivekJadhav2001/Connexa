@@ -10,23 +10,23 @@ import { fetchAllUsersPosts } from '../features/AdminSlices/adminPostsSlice.js'
 
 export default function AdminHome() {
     const [activeTab, setActiveTab] = useState('users')
-    const adminUsersDetails = useSelector((state)=>state.adminUsers)
-    const allUsersPosts = useSelector(state=>state.adminUsersPosts)
-    const adminAuthDetails = useSelector((state)=>state.adminAuth)
+    const adminUsersDetails = useSelector((state) => state.adminUsers)
+    const allUsersPosts = useSelector(state => state.adminUsersPosts)
+    const adminAuthDetails = useSelector((state) => state.adminAuth)
 
-    console.log(adminUsersDetails,"Users DATA ADMIN")
+    console.log(adminUsersDetails, "Users DATA ADMIN")
     // console.log(allUsersPosts,"POSTS DATA ADMIN")
     // console.log(adminAuthDetails,"ADMIN Details")
 
     const dispatch = useDispatch()
 
-    useEffect(()=>{
+    useEffect(() => {
         dispatch(fetchAllUsers())
         dispatch(fetchActiveUsers())
         dispatch(fetchAllUsersPosts())
         dispatch(fetchAllUserSessions())
         dispatch(fetchUsersLogs())
-    },[])
+    }, [])
 
     return (
         <div className="flex h-screen bg-background  ">

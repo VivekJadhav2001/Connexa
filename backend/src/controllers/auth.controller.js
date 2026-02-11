@@ -235,6 +235,7 @@ const requestAdminSecret = async (req, res) => {
 
     //CREARE A 6 DIGIT CODE
     const secret = crypto.randomInt(100000, 999999).toString();
+    console.log(secret);
 
     admin.adminSecret = crypto
       .createHash("sha256")
