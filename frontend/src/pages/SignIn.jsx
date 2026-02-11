@@ -18,12 +18,14 @@ function SignIn() {
   });
 
   const [adminSecret, setAdminSecret] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   /* ================= USER LOGIN ================= */
   async function userLogin(e) {
+
     e.preventDefault();
     try {
       await dispatch(signIn(credentials)).unwrap();
@@ -41,12 +43,15 @@ function SignIn() {
   async function sendAdminSecret() {
     console.log("WORKING FINE");
     try {
+      setLoading(true)
       // await axios.post("/admin/request-secret", credentials);
       await api.post("/auth/requestSecretKey", credentials);
       toast.success("Admin secret sent to email");
+      setLoading(false)
       setStep(2);
     } catch (err) {
       toast.error(err.response?.data?.message);
+      setLoading(false)
     }
   }
 
@@ -143,7 +148,7 @@ function SignIn() {
             onClick={sendAdminSecret}
             className="cursor-pointer w-full max-w-sm bg-blue-500 py-3 rounded-full font-semibold"
           >
-            Send Admin Secret
+            {loading ? "Sending...": "Send Admin Secret"}
           </button>
         )}
 

@@ -11,15 +11,28 @@ export default function UserSection() {
     const totalUsers = allusers?.allUsers?.length || 0
     const activeUsers = allusers?.activeUsers?.length || 0
 
-    // simple derived chart data (monthly split fallback)
-    const userData = [
-        { month: 'Jan', users: totalUsers * 0.4, active: activeUsers * 0.3 },
-        { month: 'Feb', users: totalUsers * 0.5, active: activeUsers * 0.4 },
-        { month: 'Mar', users: totalUsers * 0.6, active: activeUsers * 0.5 },
-        { month: 'Apr', users: totalUsers * 0.7, active: activeUsers * 0.6 },
-        { month: 'May', users: totalUsers * 0.85, active: activeUsers * 0.75 },
-        { month: 'Jun', users: totalUsers, active: activeUsers },
-    ]
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    const currentMonthIndex = new Date().getMonth()
+
+    const userData = months.slice(0, currentMonthIndex + 1).map((month, index) => {
+        const usersTillMonth = allusers?.allUsers?.filter(user => {
+            if (!user.createdAt) return false
+            const userMonth = new Date(user.createdAt).getMonth()
+            return userMonth <= index
+        }).length || 0
+
+        const activeTillMonth = allusers?.activeUsers?.filter(user => {
+            if (!user.createdAt) return false
+            const userMonth = new Date(user.createdAt).getMonth()
+            return userMonth <= index
+        }).length || 0
+
+        return {
+            month,
+            users: usersTillMonth,
+            active: activeTillMonth
+        }
+    })
 
     const topUsers = allusers?.allUsers?.slice(0, 5) || []
 
@@ -91,7 +104,7 @@ export default function UserSection() {
                 {/* User Growth Chart */}
                 <div className="bg-card border border-border rounded-xl p-6 backdrop-blur">
                     <h3 className="text-lg font-semibold text-foreground mb-4">
-                        User Growth
+                        User's Growth
                     </h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart data={userData}>
@@ -127,7 +140,7 @@ export default function UserSection() {
                 {/* User Engagement */}
                 <div className="bg-card border border-border rounded-xl p-6 backdrop-blur">
                     <h3 className="text-lg font-semibold text-foreground mb-4">
-                        User Engagement
+                        User's Engagement
                     </h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={userData}>

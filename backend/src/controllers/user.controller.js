@@ -344,6 +344,42 @@ const removeProfilePicture = async (req, res) => {
   }
 };
 
+const suggestedUsers = async (req, res) => {
+  try {
+    const userId = req.userDecoded.id;
+
+    const user = await User.findById(userId);
+
+    const suggestedUsersList = await User.find(
+      {
+        _id: {
+          $nin: [...user.following, user._id],
+        },
+      },
+      {
+        firstName: 1,
+        lastName: 1,
+        fullName: 1,
+        userName: 1,
+        email: 1,
+        batch: 1,
+        centerLocation: 1,
+      },
+    );
+
+    return res
+      .status(200)
+      .json({
+        success: false,
+        message: "Suggested Users Fetched",
+        data: suggestedUsersList,
+      });
+  } catch (error) {
+    console.error("Error In Suggested Users:", error);
+    res.status(500).json({ success: false, message: "Internal Server error" });
+  }
+};
+
 /*
 
 Apply for verification
@@ -361,4 +397,5 @@ export {
   getProfilePicUploadUrl,
   updateProfilePicture,
   removeProfilePicture,
+  suggestedUsers,
 };

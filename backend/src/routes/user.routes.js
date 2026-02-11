@@ -6,6 +6,7 @@ import {
   profile,
   removeProfilePicture,
   resetPassword,
+  suggestedUsers,
   updateProfilePicture,
 } from "../controllers/user.controller.js";
 import { authorization } from "../middlewares/authorization.js";
@@ -49,5 +50,8 @@ router.put("/profile-picture", authorization, updateProfilePicture);
 
 //remove Profile Piture
 router.delete("/remove/profile-picture", authorization, removeProfilePicture);
+
+//suggested Users
+router.get("/suggestedUsers",authorization,suggestedUsers)
 
 export default router;

@@ -16,7 +16,7 @@ export default function AdminHome() {
 
     console.log(adminUsersDetails, "Users DATA ADMIN")
     // console.log(allUsersPosts,"POSTS DATA ADMIN")
-    // console.log(adminAuthDetails,"ADMIN Details")
+    console.log(adminAuthDetails,"ADMIN Details")
 
     const dispatch = useDispatch()
 

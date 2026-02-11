@@ -11,7 +11,7 @@ export const fetchAllUsersPosts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await api.get("/admin/users/getAllPosts");
-      console.log(res,"Fetch all posts for admin")
+      // console.log(res,"Fetch all posts for admin")
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);
