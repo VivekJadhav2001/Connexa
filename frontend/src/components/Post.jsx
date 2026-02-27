@@ -10,27 +10,42 @@ function Post({ post }) {
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
   const comments = useState(post.comments);
   const [openComment, setOpenComment] = useState(false);
-  const { user } = useSelector(s => s.auth)
-  const currentUserId = user?._id
+  const { user } = useSelector((s) => s.auth);
+  const currentUserId = user?._id;
   const [liked, setLiked] = useState(
-    post.likes?.some((like) => like.userId === currentUserId) || false
+    post.likes?.some((like) => like.userId === currentUserId) || false,
   );
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  function next() {
+    if (currentIndex === post?.content.length - 1) {
+      setCurrentIndex(0);
+    } else {
+      setCurrentIndex((prev) => prev + 1);
+    }
+  }
+
+  function previous() {
+    if (currentIndex === 0) {
+      return;
+    } else if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    }
+  }
 
   const handleSubmitLike = async (postId) => {
     const isLiked = liked;
     try {
-
       setLiked(!isLiked);
       setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
-      await api.post(`post/likePost/${postId}`)
-
+      await api.post(`post/likePost/${postId}`);
     } catch (err) {
       setLiked(isLiked);
       setLikesCount((prev) => (isLiked ? prev + 1 : prev - 1));
-      console.log(err)
+      console.log(err);
     }
-  }
-
+  };
 
   // console.log(post, "post in Post Component")
   return (
@@ -47,7 +62,7 @@ function Post({ post }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1" >
+        <div className="flex-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-white">
@@ -100,14 +115,42 @@ function Post({ post }) {
 
           {/* Carousel */}
           {post.contentType === "carousel" && (
-            <div className="mt-3 rounded-xl overflow-hidden border border-gray-800">
-              <div className="flex overflow-x-auto scroll-smooth no-scrollbar">
-                {post.content.map((img, index) => (
-                  <img
+            <div className="mt-3 relative rounded-xl overflow-hidden border border-gray-800">
+              {/* Image */}
+              <img
+                src={post.content[currentIndex]}
+                alt="post"
+                className="w-full object-cover max-h-[500px]"
+              />
+
+              {/* Left Arrow */}
+              {post.content.length > 1 && (
+                <button
+                  onClick={previous}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 text-white p-2 rounded-full"
+                >
+                  ‹
+                </button>
+              )}
+
+              {/* Right Arrow */}
+              {post.content.length > 1 && (
+                <button
+                  onClick={next}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 text-white p-2 rounded-full"
+                >
+                  ›
+                </button>
+              )}
+
+              {/* Dots Indicator */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
+                {post.content.map((_, index) => (
+                  <div
                     key={index}
-                    src={img}
-                    alt={`post-${index}`}
-                    className="w-full object-cover max-h-[500px] shrink-0"
+                    className={`h-2 w-2 rounded-full ${
+                      index === currentIndex ? "bg-white" : "bg-gray-500"
+                    }`}
                   />
                 ))}
               </div>
@@ -122,10 +165,7 @@ function Post({ post }) {
           onClick={() => setOpenComment(true)}
           className="flex items-center gap-3 hover:text-blue-400 cursor-pointer"
         >
-          <FaRegComment
-
-          />
-
+          <FaRegComment />
 
           <span className="text-sm">{post.commentsCount}</span>
         </div>

@@ -14,6 +14,8 @@ export default function Home() {
   const userInfo = useSelector((state) => state.user.currentUser);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
+  console.log(allPosts,"allposts")
+
   useEffect(() => {
     if (isAuthenticated && (!allPosts || allPosts.length === 0)) {
       console.log("Fetching posts on Home load...");

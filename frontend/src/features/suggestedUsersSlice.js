@@ -14,7 +14,7 @@ export const fetchSuggestedUsers = createAsyncThunk(
   "suggestedUsers/fetchSuggestedUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/user/suggested");
+      const res = await api.get("/user/suggestedUsers");
       console.log("Suggested users fetched:", res.data.data);
       return res.data.data;
     } catch (error) {

@@ -131,13 +131,14 @@ export default function Profile() {
 
       {/* Tabs */}
       <div className="flex justify-between mt-6 border-b border-gray-800 text-sm">
-        {["Posts", "Replies", "Highlights", "Media", "Likes"].map((tab, i) => (
+        {["Posts", "Likes"].map((tab, i) => (
           <button
             key={tab}
             className={`py-3 w-full text-center hover:bg-gray-900 transition
-              ${i === 0
-                ? "border-b-2 border-blue-500 font-semibold"
-                : "text-gray-400"
+              ${
+                i === 0
+                  ? "border-b-2 border-blue-500 font-semibold"
+                  : "text-gray-400"
               }
             `}
           >
@@ -149,37 +150,48 @@ export default function Profile() {
       {/* Posts */}
       <div className="p-6 text-gray-500 text-sm">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {userPosts?.map((post) => (
-            <div
-              key={post._id}
-              className="bg-gray-900 rounded-lg overflow-hidden border border-gray-600"
-            >
-              <div className="flex items-center p-2">
-                <img
-                  src={post.author.profilePicture}
-                  alt={post.author.firstName}
-                  className="w-8 h-8 rounded-full mr-2"
-                />
-                <span className="text-white font-semibold">
-                  {post.author.firstName}
-                </span>
-              </div>
+          {userPosts?.map((post) => {
+            const profilePic = post?.author?.profilePicture;
 
-              <img
-                src={post.content}
-                alt={post.caption}
-                className="w-full h-120 object-cover"
-              />
-            </div>
-          ))}
+            return (
+              <div
+                key={post._id}
+                className="bg-gray-900 rounded-lg overflow-hidden border border-gray-600"
+              >
+                <div className="flex items-center p-2">
+                  {profilePic ? (
+                    <img
+                      src={profilePic}
+                      alt={post?.author?.firstName}
+                      className="w-8 h-8 rounded-full mr-2"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full mr-2 bg-gray-700 flex items-center justify-center text-white font-semibold">
+                      {post?.author?.firstName?.[0]?.toUpperCase() || "U"}
+                    </div>
+                  )}
+
+                  <span className="text-white font-semibold">
+                    {post?.author?.firstName}
+                  </span>
+                </div>
+
+                <img
+                  src={post.content?.[0]}
+                  alt={post.caption}
+                  className="w-full h-80 object-cover"
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
       <UpdateProfilePictureModal
         isOpen={isProfilePicModalOpen}
         onClose={() => {
-          setIsProfilePicModalOpen(false)
-          console.log("working")
+          setIsProfilePicModalOpen(false);
+          console.log("working");
         }}
       />
     </div>

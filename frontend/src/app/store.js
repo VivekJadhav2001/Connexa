@@ -6,6 +6,7 @@ import postReducer from "../features/postSlice.js";
 import adminUsersReducer from "../features/AdminSlices/adminUsersSlice.js"
 import adminUsersPostsReducer from "../features/AdminSlices/adminPostsSlice.js"
 import adminAuthReducer from "../features/AdminSlices/adminAuthSlice.js"
+import suggestedUsersReducer from "../features/suggestedUsersSlice.js"
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -14,7 +15,8 @@ const store = configureStore({
     posts: postReducer,
     adminAuth:adminAuthReducer,
     adminUsers: adminUsersReducer, 
-    adminUsersPosts:adminUsersPostsReducer
+    adminUsersPosts:adminUsersPostsReducer,
+    suggestedUsers :suggestedUsersReducer
   },
 });
 
