@@ -105,7 +105,7 @@ export default function CreatePostModal({ isOpen, onClose }) {
                     content:
                         urls.length > 0
                             ? urls.map((u) => u.publicUrl)
-                            : [content], // ✅ text content fallback
+                            : [content], // text content fallback
                     caption: caption,
                     visibility: visibility,
                     referralDetails:
@@ -145,8 +145,9 @@ export default function CreatePostModal({ isOpen, onClose }) {
                     placeholder="What’s happening?"
                     className="w-full bg-transparent text-lg outline-none resize-none"
                     rows="4"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
+                    
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
                 />
 
                 {/* Media Upload */}
@@ -259,8 +260,8 @@ export default function CreatePostModal({ isOpen, onClose }) {
                 <input
                     className="w-full bg-gray-900 px-3 py-2 rounded mt-3"
                     placeholder="Caption (optional)"
-                    value={caption}
-                    onChange={(e) => setCaption(e.target.value)}
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
                 />
 
                 {/* Visibility */}

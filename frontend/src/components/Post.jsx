@@ -5,10 +5,10 @@ import CommentModal from "./CommentModal";
 import { useEffect, useState } from "react";
 import api from "../utils/api";
 import { useSelector } from "react-redux";
+import LikesModal from "./LikesModal";
 
 function Post({ post }) {
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
-  const comments = useState(post.comments);
   const [openComment, setOpenComment] = useState(false);
   const { user } = useSelector((s) => s.auth);
   const currentUserId = user?._id;
@@ -17,6 +17,9 @@ function Post({ post }) {
   );
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState(post.comments || []);
+  const [showLikes, setShowLikes] = useState(false);
 
   function next() {
     if (currentIndex === post?.content.length - 1) {
@@ -77,7 +80,7 @@ function Post({ post }) {
           </div>
 
           {/* Text */}
-          <p className="mt-1 text-gray-200">
+          <p className="mt-1 text-gray-200 whitespace-pre-line">
             {post.caption.split(/(#[a-zA-Z0-9_]+)/g).map((word, i) =>
               word.startsWith("#") ? (
                 <span
@@ -161,23 +164,75 @@ function Post({ post }) {
 
       {/* Action Icons - Left Vertical */}
       <div className="mt-3 ml-14 flex gap-4 text-gray-400">
-        <div
-          onClick={() => setOpenComment(true)}
-          className="flex items-center gap-3 hover:text-blue-400 cursor-pointer"
-        >
-          <FaRegComment />
+        <div className="flex items-center gap-3 hover:text-blue-400 cursor-pointer">
+          <FaRegComment
+            onClick={() => setOpenComment(true)}
+            className="cursor-pointer hover:text-blue-400"
+          />
 
-          <span className="text-sm">{post.commentsCount}</span>
+          <span
+            onClick={() => setShowComments((prev) => !prev)}
+            className="text-sm cursor-pointer hover:underline"
+          >
+            {comments.length}
+          </span>
         </div>
 
-        <div className="flex items-center gap-3 hover:text-red-500 cursor-pointer">
-          <FaRegHeart onClick={() => handleSubmitLike(post._id)} />
-          <span className="text-sm">{likesCount}</span>
+        <div className="flex items-center gap-2">
+          <FaRegHeart
+            onClick={() => handleSubmitLike(post._id)}
+            className={`cursor-pointer hover:text-red-500 ${
+              liked ? "text-red-500" : ""
+            }`}
+          />
+          <span
+            onClick={() => setShowLikes((prev) => !prev)}
+            className="text-sm cursor-pointer hover:underline"
+          >
+            {likesCount}
+          </span>
         </div>
       </div>
 
+      {showComments && (
+        <div className="ml-14 mt-3 space-y-3 border-l border-gray-800 pl-4">
+          {comments.length === 0 ? (
+            <p className="text-gray-500 text-sm">No comments yet</p>
+          ) : (
+            comments.map((c) => (
+              <div key={c._id} className="flex gap-3 items-start">
+                {/* Avatar */}
+                <img
+                  src={c?.user?.profilePicture || "/default-avatar.png"}
+                  alt="user"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+
+                {/* Comment Bubble */}
+                <div className="bg-gray-900 px-3 py-2 rounded-xl max-w-[80%]">
+                  <p className="text-sm text-white font-medium">
+                    {c.user.firstName} {c.user.lastName}
+                  </p>
+                  <p className="text-sm text-gray-300">{c.comment}</p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {showLikes && (
+        <LikesModal likes={post.likes} onClose={() => setShowLikes(false)} />
+      )}
+
       {openComment && (
-        <CommentModal post={post} onClose={() => setOpenComment(false)} />
+        <CommentModal
+          post={post}
+          onClose={() => setOpenComment(false)}
+          onAddComment={(newComment) =>
+            setComments((prev) => [...prev, newComment])
+          }
+        />
       )}
     </div>
   );

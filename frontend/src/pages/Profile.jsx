@@ -59,8 +59,8 @@ export default function Profile() {
       <div className="h-52 bg-linear-to-r from-gray-700 to-gray-800">
         <img
           className="h-full"
-          src="https://njvawavweamzvvakmsgn.supabase.co/storage/v1/object/public/accioconnect/Blue%20White%20Aesthetic%20Welcome%20to%20My%20Profile%20Twitter%20Header.png"
-          alt="sai"
+          src=""
+          alt="background_Image"
         />
       </div>
 
