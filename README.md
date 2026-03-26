@@ -91,32 +91,32 @@ cd backend && npm install
 ##backend
 
 PORT=3000
-MONGODB_URI="mongodb+srv://vivekjadhav200127_db_user:Apdu8E1aJX9gzfOZ@cluster0.xzzrrlv.mongodb.net/AccioConnect"
-JWT_SECRET="c29TJTBv9tcf0L3m7YRh0SxOkhbKblbZK7W0jIcr0pbiGkFXx8KdpbkUciY1IzRW"
-EXPIRE_TOKEN="7d"
-ADMIN_SECRET="myAdmin@5ken"
+MONGODB_URI=""
+JWT_SECRET=""
+EXPIRE_TOKEN=""
+ADMIN_SECRET=""
 
-AWS_ACCESS_KEY_ID="AKIA5OBALN6G52VOWT56"
-AWS_SECRET_ACCESS_KEY="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"
-AWS_REGION="ap-south-2"
-AWS_BUCKET_NAME="connexa-bucket"
+AWS_ACCESS_KEY_ID=""
+AWS_SECRET_ACCESS_KEY=""
+AWS_REGION=""
+AWS_BUCKET_NAME=""
 
 FRONTEND_URL="http://localhost:5173"
 
-EMAIL_HOST="smtp.gmail.com"
-EMAIL_PORT=587
-EMAIL_USER="vivek.jadhav20010927@gmail.com"
-EMAIL_PASS="ndwk tvcp lial dimd"
+EMAIL_HOST=""
+EMAIL_PORT=
+EMAIL_USER=""
+EMAIL_PASS=""
 
 ##frontend
 VITE_BACKEND_API_V1="http://localhost:3000"
 
 VITE_LOGO_URL="https://influential-teal-twkrht8r6d.edgeone.app/logo.png"
-VITE_S3_BASE_URL=https://bucket-connexa.s3.ap-south-2.amazonaws.com/
-VITE_APP_BUCKET_NAME="connexa-bucket"
-VITE_APP_AWS_REGION="ap-south-2"
+VITE_S3_BASE_URL=
+VITE_APP_BUCKET_NAME=""
+VITE_APP_AWS_REGION=""
 
-VITE_ADMIN_TOKEN="connexa-admin-token"
+VITE_ADMIN_TOKEN=""
 
 ### 🔑 Demo Credentials
 Email: verma.divyansh0@gmail.com
