@@ -15,6 +15,13 @@ export const client = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
+
+//Used to delete the S3 image
+export const getKeyFromUrl = (url) => {
+  const urlObj = new URL(url);
+  return decodeURIComponent(urlObj.pathname.substring(1));
+};
+
 async function uploadFileToS3(fileBuffer, fileName, mimeType) {
   // Basic validations
   if (!fileBuffer || !fileName || !mimeType) {

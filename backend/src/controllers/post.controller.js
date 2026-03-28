@@ -2,9 +2,9 @@ import { TYPE_OF_POST } from "../constants.js";
 import { Post } from "../models/post.model.js";
 import { Like } from "../models/likes.model.js";
 import { Comment } from "../models/comments.model.js";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { client } from "../services/S3_Buckets.js";
+import { client, getKeyFromUrl } from "../services/S3_Buckets.js";
 
 const createPost = async (req, res) => {
   // console.log(req.body);
@@ -199,10 +199,33 @@ const deletePost = async (req, res) => {
     if (post.author.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,
-        message: "Not allowed to delete others' posts",
+        message: "Not allowed",
       });
     }
 
+    //  DELETE ALL FILES FROM S3 (content is array)
+    if (post.content && post.content.length > 0) {
+      for (let url of post.content) {
+        const key = getKeyFromUrl(url);
+
+        console.log("URL:", url);
+        console.log("Extracted Key:", key);
+
+        try {
+          await s3.send(
+            new DeleteObjectCommand({
+              Bucket: process.env.AWS_BUCKET_NAME,
+              Key: key,
+            }),
+          );
+          console.log("Deleted:", key);
+        } catch (err) {
+          console.error("S3 delete failed:", err);
+        }
+      }
+    }
+
+    // DELETE DB
     await Post.findByIdAndDelete(postId);
 
     res.status(200).json({
