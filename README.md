@@ -1,102 +1,129 @@
-```
-Requirements - LMS Community
-(24 - Dead Line)
+# 🚀 Connexa – Full Stack Social Platform
 
-=> Students => Create Post (Poll, Project, General, Referral)
-                              => Connections
-                              => Chat or Video Call
-                              => Based on Professionals session Student can rate the Professionals
-                              =>
+Connexa is a **full-stack social media platform** built using the MERN stack. It enables users to create, share, and interact with content while implementing **secure authentication, AWS S3 media handling, and role-based access control (RBAC) with an admin dashboard**.
+
+---
+
+## 🌟 Features
+
+### 👤 User Features
+- 🔐 JWT Authentication (cookie-based)
+- 📝 Create, edit, and delete posts
+- 🖼️ Image upload using AWS S3
+- ❤️ Like / Unlike posts
+- 💬 Comment on posts
+- 📰 Personalized feed
+- 👤 View user profiles
+
+---
+
+### 🛡️ Admin Features (RBAC)
+- Role-Based Access Control (Admin/User)
+- 📊 Admin Dashboard
+- 👥 Manage users (view/delete/block)
+- 🗑️ Moderate posts
+- 🔒 Protected admin routes
+
+---
+
+## 🏗️ Tech Stack
+
+### Frontend
+- React 19  
+- Tailwind CSS  
+- Redux Toolkit  
+- Axios (`withCredentials: true`)  
+
+### Backend
+- Node.js  
+- Express.js  
+- MongoDB (Mongoose)  
+
+### Integrations
+- AWS S3 (image storage)  
+- Multer (file upload handling)  
+- JWT Authentication  
+
+---
+
+## 🔐 Authentication & Security
+- JWT stored in HTTP-only cookies  
+- Protected routes (frontend + backend)  
+- RBAC for admin-level access  
+- Secure API communication  
+
+---
+
+## 📦 Functionalities
+
+### 🧑‍💻 User Actions
+- Register / Login / Logout  
+- Create posts with images  
+- Like & comment on posts  
+- Edit / delete own posts  
+- View other users' profiles  
+
+### 🛠️ Admin Actions
+- Access admin dashboard  
+- Manage users  
+- Delete inappropriate posts  
+- Control platform activity  
+
+---
+
+## ☁️ AWS S3 Integration
+- Secure image upload to AWS S3  
+- Backend handles upload using Multer  
+- Cloud-based storage for scalability  
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
+
+git clone https://github.com/VivekJadhav2001/Connexa.git
+
+cd frontend && npm install
+cd backend && npm install
+
+### .env
+##backend
+
+PORT=3000
+MONGODB_URI=""
+JWT_SECRET=""
+EXPIRE_TOKEN=""
+ADMIN_SECRET=""
+
+AWS_ACCESS_KEY_ID=""
+AWS_SECRET_ACCESS_KEY=""
+AWS_REGION=""
+AWS_BUCKET_NAME=""
+
+FRONTEND_URL="http://localhost:5173"
+
+EMAIL_HOST=""
+EMAIL_PORT=
+EMAIL_USER=""
+EMAIL_PASS=""
+
+##frontend
+VITE_BACKEND_API_V1="http://localhost:3000"
+
+VITE_LOGO_URL="https://influential-teal-twkrht8r6d.edgeone.app/logo.png"
+VITE_S3_BASE_URL=
+VITE_APP_BUCKET_NAME=""
+VITE_APP_AWS_REGION=""
+
+VITE_ADMIN_TOKEN=""
+
+### 🔑 Demo Credentials
+Email: verma.divyansh0@gmail.com
+Password: Password!123
 
 
-=> Professionals => Can Take a Sessions (webinar based - ask to admin to create a Room and req ok => Room Created)
-                                        => Add Urgent Requirements (Based on Location - Only visible to Location basis)
-                                        =>
+### 🎥 Demo
+Video 🎥 => https://drive.google.com/file/d/1e5UV7G69bgll82DVKhmpsIrqMgeSZ6oC/view?usp=sharing
+Image 📷 = > https://drive.google.com/file/d/1Nu0_0Ob3iyXJEhdyGYgks5WsnccwqObw/view?usp=sharing
 
-
-=> Admin  => CRUD operations on Students, and Professionals
-                        =>  Filters, Search engine, Visualizations
-                        => Control Access of Student Account for a Limited time period
-                        => Vulgue Post deletions
-                        =>
-
-
-Optionals => Monitoring
-                        => Session Management
-                        => Analytics Tech Stack
-
-FRONTEND
-
-*********************************
-React Redux Toolkit
-axios/ rtk query
-tailwindCss
-Toastify
-Modals
-emoji picker
-react Router Dom
-React Hook Form (validations)
-reCharts
-Framer Motion
-react icons
-ShadCn
-zegoClode(server sdk)
-
-TASKS
-=> Get ALl posts for a user
-
-
-ADMIN
-********
-Dashboard workflow
-==================
-=>Implement get all student/users data preview it in charts, pie graphs
-=> User Engagement(timespend-byWeek,month,yearly)
-=> user visted Profile on Application
-=> create a component which shows number of users, no.of users placed, no.of users are students, no.of posts uploaded, avg no.of posts uploaded in a month
-=> create a component for number of application visits.
-=> search input where admin can search by Name.
-=> create a component to view user details like a card.
-
-Action on User
-==============
-=> Delete Account,Posts,comments
-
-BACKEND
-**************************
-AWS_S3 Sdk - (2 packeages)
-bcryptjs
-cookie-parcer
-cors
-express
-dotenv
-jwt
-nodemon
-mongoose
-zegoCloude (@zegoclode uikit prebuilt) Find Alternative Approach
-Firebase Google Maps API
-
-Admin API
-==========
-=> Get All users with data without password
-=> get user by Id(single user)
-=> auth API for logout
-=> create a edit post api as well as edit profile of user
-=> Api for application visits using logs
-=>APi for forgot password
-=> API to delete post comment
-=> API for AWS-s3 usages like storage
-
-
-//backend Api
-=> Kept session Schema create a api which sends login logout and device info
-=> according to the last login of user show GMap location of user 
-=> APi for getting top Liked post 
-
-//mapcn.dev component to show user location to admin
-
-
-
-
-Student and Professional Connection to char and video call and Admin Dashboard(main)
-```
