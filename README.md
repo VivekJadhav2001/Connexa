@@ -88,35 +88,7 @@ cd frontend && npm install
 cd backend && npm install
 
 ### .env
-##backend
-
-PORT=3000
-MONGODB_URI=""
-JWT_SECRET=""
-EXPIRE_TOKEN=""
-ADMIN_SECRET=""
-
-AWS_ACCESS_KEY_ID=""
-AWS_SECRET_ACCESS_KEY=""
-AWS_REGION=""
-AWS_BUCKET_NAME=""
-
-FRONTEND_URL="http://localhost:5173"
-
-EMAIL_HOST=""
-EMAIL_PORT=
-EMAIL_USER=""
-EMAIL_PASS=""
-
-##frontend
-VITE_BACKEND_API_V1="http://localhost:3000"
-
-VITE_LOGO_URL="https://influential-teal-twkrht8r6d.edgeone.app/logo.png"
-VITE_S3_BASE_URL=
-VITE_APP_BUCKET_NAME=""
-VITE_APP_AWS_REGION=""
-
-VITE_ADMIN_TOKEN=""
+Check out .env.example file
 
 ### 🔑 Demo Credentials
 Email: verma.divyansh0@gmail.com
